@@ -1,3 +1,7 @@
 *
+<<<<<<< HEAD
+=======
+!private/
+>>>>>>> 554fa44 (branch dev)
 !public/
 !.gitignore

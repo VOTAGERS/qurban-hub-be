@@ -25,6 +25,7 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
+<<<<<<< HEAD
 You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
 If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
@@ -48,6 +49,23 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[OP.GG](https://op.gg)**
 - **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
 - **[Lendio](https://lendio.com)**
+=======
+In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+
+You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+
+## Agentic Development
+
+Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+
+```bash
+composer require laravel/boost --dev
+
+php artisan boost:install
+```
+
+Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+>>>>>>> 554fa44 (branch dev)
 
 ## Contributing
 
