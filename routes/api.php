@@ -31,6 +31,10 @@ Route::prefix('users')->group(function () {
 
 Route::prefix('packages')->group(function () {
     Route::get('/', [PackageController::class, 'index']);
+    Route::post('/', [PackageController::class, 'store']);
+    Route::get('/{id}', [PackageController::class, 'show']);
+    Route::put('/{id}', [PackageController::class, 'update']);
+    Route::delete('/{id}', [PackageController::class, 'destroy']);
 });
 
 Route::prefix('orders')->group(function () {
@@ -67,4 +71,11 @@ Route::prefix('admins')->group(function () {
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::get('/test', function () {
+    return response()->json([
+        'message' => 'Connection to Backend Successful!',
+        'status' => 'success'
+    ]);
 });
