@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\HasAuditFields;
+
 class Package extends Model
 {
-    use HasFactory;
+    use HasFactory, HasAuditFields;
 
     protected $primaryKey = 'id_package';
 
