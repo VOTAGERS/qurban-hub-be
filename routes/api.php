@@ -24,6 +24,12 @@ use App\Http\Controllers\QurbanMediaController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\WebhookController;
+
+
+
+
+Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
