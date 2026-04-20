@@ -27,6 +27,6 @@ class OrderWoo extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserWoo::class);
     }
 }

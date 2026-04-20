@@ -29,11 +29,11 @@ class ProcessWooWebhookJob implements ShouldQueue
             'order.created',
             'order.updated' => app(\OrderEventHandler::class)->handle($this->payload),
 
-            // 'customer.created',
-            // 'customer.updated' => app(\CustomerEventHandler::class)->handle($this->payload),
+            'customer.created',
+            'customer.updated' => app(\CustomerEventHandler::class)->handle($this->payload),
 
-            // 'product.created',
-            // 'product.updated' => app(ProductEventHandler::class)->handle($this->payload),
+            'product.created',
+            'product.updated' => app(\ProductEventHandler::class)->handle($this->payload),
 
             default => null
         };
