@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Services\Woo;
+
 use App\Models\ProductWoo;
 
 class ProductEventHandler
