@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductWoo extends Model
 {
+    protected $table = 'products_woo';
+
     protected $fillable = [
         'woo_id',
         'name',

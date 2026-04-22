@@ -7,6 +7,8 @@ use App\Models\OrderItemWoo;
 
 class OrderWoo extends Model
 {
+    protected $table = 'orders_woo';
+
     protected $fillable = [
         'woo_id',
         'user_id',
