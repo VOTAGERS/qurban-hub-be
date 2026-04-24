@@ -25,11 +25,29 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebhookController;
-
-
-
+use App\Http\Controllers\ProductWooController;
+use App\Http\Controllers\UserWooController;
+use App\Http\Controllers\OrderWooController;
 
 Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
+
+Route::prefix('products-woo')->group(function () {
+    Route::get('/', [ProductWooController::class, 'index']);
+    Route::post('/', [ProductWooController::class, 'store']);
+    Route::get('/{id}', [ProductWooController::class, 'show']);
+});
+
+Route::prefix('users-woo')->group(function () {
+    Route::get('/', [UserWooController::class, 'index']);
+    Route::post('/', [UserWooController::class, 'store']);
+    Route::get('/{id}', [UserWooController::class, 'show']);
+});
+
+Route::prefix('orders-woo')->group(function () {
+    Route::get('/', [OrderWooController::class, 'index']);
+    Route::post('/', [OrderWooController::class, 'store']);
+    Route::get('/{id}', [OrderWooController::class, 'show']);
+});
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
