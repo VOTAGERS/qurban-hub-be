@@ -3,19 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ProductDetailWooController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderParticipantController;
 use App\Http\Controllers\PaymentController;
@@ -53,12 +42,16 @@ Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
 });
 
-Route::prefix('packages')->group(function () {
-    Route::get('/', [PackageController::class, 'index']);
-    Route::post('/', [PackageController::class, 'store']);
-    Route::get('/{id}', [PackageController::class, 'show']);
-    Route::put('/{id}', [PackageController::class, 'update']);
-    Route::delete('/{id}', [PackageController::class, 'destroy']);
+Route::prefix('products-detail')->group(function () {
+    Route::get('/', [ProductDetailWooController::class, 'index']);
+    Route::post('/', [ProductDetailWooController::class, 'store']);
+    Route::get('/{id}', [ProductDetailWooController::class, 'show']);
+    Route::put('/{id}', [ProductDetailWooController::class, 'update']);
+    Route::delete('/{id}', [ProductDetailWooController::class, 'destroy']);
+});
+
+Route::prefix('products-woo')->group(function () {
+    Route::get('/', [ProductWooController::class, 'index']);
 });
 
 Route::prefix('orders')->group(function () {

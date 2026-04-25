@@ -3,35 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductWoo;
-use Illuminate\Http\Request;
 
 class ProductWooController extends Controller
 {
     public function index()
     {
+        // Typically we only want to list published products or all products for admin
         $products = ProductWoo::all();
         return response()->json([
-            'status' => 'success',
-            'data' => $products
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        app(\App\Services\Woo\ProductEventHandler::class)->handle($request->all());
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Product processed using existing ProductEventHandler'
-        ], 201);
-    }
-
-    public function show($id)
-    {
-        $product = ProductWoo::findOrFail($id);
-        return response()->json([
-            'status' => 'success',
-            'data' => $product
+            'success' => true,
+            'data' => $products,
+            'message' => 'WooCommerce products retrieved successfully'
         ]);
     }
 }

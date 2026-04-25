@@ -7,25 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Traits\HasAuditFields;
 
-class Package extends Model
+class ProductDetailWoo extends Model
 {
     use HasFactory, HasAuditFields;
 
-    protected $primaryKey = 'id_package';
+    protected $table = 'productsdetail_woo';
 
     protected $fillable = [
-        'animal_type',
+        'idproduct_woo',
         'country',
-        'price',
         'max_share',
-        'description',
         'status',
         'created_by',
         'updated_by',
     ];
 
-    public function orders()
+    public function productWoo()
     {
-        return $this->hasMany(Order::class, 'id_package');
+        return $this->belongsTo(ProductWoo::class, 'idproduct_woo', 'id');
     }
 }

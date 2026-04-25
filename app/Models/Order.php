@@ -14,7 +14,7 @@ class Order extends Model
     protected $fillable = [
         'order_code',
         'id_user',
-        'id_package',
+        'idproduct_woo',
         'quantity',
         'total_price',
         'payment_status',
@@ -29,9 +29,9 @@ class Order extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function package()
+    public function productWoo()
     {
-        return $this->belongsTo(Package::class, 'id_package');
+        return $this->belongsTo(ProductWoo::class, 'idproduct_woo');
     }
 
     public function participants()
