@@ -15,42 +15,33 @@ class ProcessWooWebhookJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $event;
-    public $payload;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($event, $payload)
-    {
-        $this->event = $event;
-        $this->payload = $payload;
-    }
+    public function __construct(
+        public array $eventPayload
+    ) {}
 
     /**
      * Execute the job.
      */
     public function handle()
     {
-        if (!$this->event) {
-            return;
-        }
+        $event = $this->eventPayload['type'] ?? null;
+        $data  = $this->eventPayload['data'] ?? [];
 
-        switch ($this->event) {
-            case 'order.created':
-            case 'order.updated':
-                app(OrderEventHandler::class)->handle($this->payload);
-                break;
+        match ($event) {
+            'order.created',
+            'order.updated' => app(OrderEventHandler::class)->handle($data),
 
-            case 'customer.created':
-            case 'customer.updated':
-                app(CustomerEventHandler::class)->handle($this->payload);
-                break;
+            'customer.created',
+            'customer.updated' => app(CustomerEventHandler::class)->handle($data),
 
-            case 'product.created':
-            case 'product.updated':
-                app(ProductEventHandler::class)->handle($this->payload);
-                break;
-        }
+            'product.created',
+            'product.updated' => app(ProductEventHandler::class)->handle($data),
+
+            default => null
+        };
     }
 }
