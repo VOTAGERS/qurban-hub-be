@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('products_woo', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('woo_id')->unique();
             $table->string('name');
             $table->decimal('price', 12, 2);
             $table->string('status', 50);

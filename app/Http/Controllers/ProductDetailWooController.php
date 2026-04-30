@@ -28,7 +28,6 @@ class ProductDetailWooController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'woo_id' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'status_woo' => 'required|string|max:50',
@@ -39,10 +38,7 @@ class ProductDetailWooController extends Controller
         try {
             DB::beginTransaction();
 
-            $wooId = $request->woo_id ? $request->woo_id : rand(100000, 999999);
-
             $productWoo = ProductWoo::create([
-                'woo_id' => $wooId,
                 'name' => $request->name,
                 'price' => $request->price,
                 'status' => $request->status_woo,
@@ -89,7 +85,6 @@ class ProductDetailWooController extends Controller
         $detail = ProductDetailWoo::findOrFail($id);
 
         $request->validate([
-            'woo_id' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'status_woo' => 'required|string|max:50',
@@ -102,10 +97,8 @@ class ProductDetailWooController extends Controller
 
             // Update ProductWoo
             $productWoo = ProductWoo::findOrFail($detail->idproduct_woo);
-            $wooId = $request->woo_id ? $request->woo_id : $productWoo->woo_id;
             
             $productWoo->update([
-                'woo_id' => $wooId,
                 'name' => $request->name,
                 'price' => $request->price,
                 'status' => $request->status_woo,
