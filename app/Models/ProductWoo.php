@@ -13,4 +13,9 @@ class ProductWoo extends Model
         'price',
         'status'
     ];
+
+    public function productDetail()
+    {
+        return $this->hasOne(ProductDetailWoo::class, 'idproduct_woo', 'id');
+    }
 }

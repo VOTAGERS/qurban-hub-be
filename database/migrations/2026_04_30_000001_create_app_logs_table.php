@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_logs', function (Blueprint $table) {
+        Schema::create('apps_log', function (Blueprint $table) {
             $table->id('id_apps_log');
             $table->longText('data_capture')->nullable();
             $table->text('message')->nullable();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_logs');
+        Schema::dropIfExists('apps_log');
     }
 };

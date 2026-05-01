@@ -17,6 +17,7 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ProductWooController;
 use App\Http\Controllers\UserWooController;
 use App\Http\Controllers\OrderWooController;
+use App\Http\Controllers\Api\CheckoutController;
 
 Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
 
@@ -89,6 +90,8 @@ Route::prefix('admins')->group(function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/checkout', [CheckoutController::class, 'process']);
 
 Route::get('/test', function () {
     return response()->json([

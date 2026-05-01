@@ -9,7 +9,7 @@ class AppLog extends Model
 {
     use HasFactory;
 
-    protected $table = 'app_logs';
+    protected $table = 'apps_log';
     protected $primaryKey = 'id_apps_log';
 
     protected $fillable = [

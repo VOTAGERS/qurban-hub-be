@@ -8,12 +8,11 @@ class ProductWooController extends Controller
 {
     public function index()
     {
-        // Typically we only want to list published products or all products for admin
-        $products = ProductWoo::all();
+        $products = ProductWoo::with('productDetail')->get();
         return response()->json([
             'success' => true,
             'data' => $products,
-            'message' => 'WooCommerce products retrieved successfully'
+            'message' => 'WooCommerce products with details retrieved successfully'
         ]);
     }
 }
