@@ -13,9 +13,17 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('id_user');
-            $table->string('full_name');
+            $table->string('first_name');
+            $table->string('last_name')->nullable();
+            $table->string('company')->nullable();
+            $table->string('address_1')->nullable();
+            $table->string('address_2')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('postcode')->nullable();
+            $table->string('country')->nullable();
             $table->string('email')->nullable()->index();
-            $table->string('phone_number', 50)->index();
+            $table->string('phone', 50)->index();
 
             $table->string('status', 10)->default('A');
             $table->string('created_by', 100)->nullable();

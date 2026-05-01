@@ -3,19 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ProductDetailWooController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderParticipantController;
 use App\Http\Controllers\PaymentController;
@@ -24,17 +13,46 @@ use App\Http\Controllers\QurbanMediaController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\ProductWooController;
+use App\Http\Controllers\UserWooController;
+use App\Http\Controllers\OrderWooController;
+use App\Http\Controllers\Api\CheckoutController;
+
+Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
+
+Route::prefix('products-woo')->group(function () {
+    Route::get('/', [ProductWooController::class, 'index']);
+    Route::post('/', [ProductWooController::class, 'store']);
+    Route::get('/{id}', [ProductWooController::class, 'show']);
+});
+
+Route::prefix('users-woo')->group(function () {
+    Route::get('/', [UserWooController::class, 'index']);
+    Route::post('/', [UserWooController::class, 'store']);
+    Route::get('/{id}', [UserWooController::class, 'show']);
+});
+
+Route::prefix('orders-woo')->group(function () {
+    Route::get('/', [OrderWooController::class, 'index']);
+    Route::post('/', [OrderWooController::class, 'store']);
+    Route::get('/{id}', [OrderWooController::class, 'show']);
+});
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
 });
 
-Route::prefix('packages')->group(function () {
-    Route::get('/', [PackageController::class, 'index']);
-    Route::post('/', [PackageController::class, 'store']);
-    Route::get('/{id}', [PackageController::class, 'show']);
-    Route::put('/{id}', [PackageController::class, 'update']);
-    Route::delete('/{id}', [PackageController::class, 'destroy']);
+Route::prefix('products-detail')->group(function () {
+    Route::get('/', [ProductDetailWooController::class, 'index']);
+    Route::post('/', [ProductDetailWooController::class, 'store']);
+    Route::get('/{id}', [ProductDetailWooController::class, 'show']);
+    Route::put('/{id}', [ProductDetailWooController::class, 'update']);
+    Route::delete('/{id}', [ProductDetailWooController::class, 'destroy']);
+});
+
+Route::prefix('products-woo')->group(function () {
+    Route::get('/', [ProductWooController::class, 'index']);
 });
 
 Route::prefix('orders')->group(function () {
@@ -72,6 +90,8 @@ Route::prefix('admins')->group(function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/checkout', [CheckoutController::class, 'process']);
 
 Route::get('/test', function () {
     return response()->json([
