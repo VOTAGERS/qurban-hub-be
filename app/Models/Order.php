@@ -53,4 +53,14 @@ class Order extends Model
     {
         return $this->hasMany(Delivery::class, 'id_order');
     }
+
+    public function billing()
+    {
+        return $this->hasOne(Billing::class, 'id_order');
+    }
+
+    public function shipping()
+    {
+        return $this->hasOne(Shipping::class, 'id_order');
+    }
 }

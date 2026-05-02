@@ -18,6 +18,7 @@ use App\Http\Controllers\ProductWooController;
 use App\Http\Controllers\UserWooController;
 use App\Http\Controllers\OrderWooController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\OrderDetailsController;
 
 Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
 
@@ -92,6 +93,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/checkout', [CheckoutController::class, 'process']);
+
+// New route for fetching order details
+Route::get('/order-details/{orderCode}', [OrderDetailsController::class, 'show']);
 
 Route::get('/test', function () {
     return response()->json([
