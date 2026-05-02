@@ -8,7 +8,12 @@ class ProductWooController extends Controller
 {
     public function index()
     {
-        $products = ProductWoo::with('productDetail')->get();
+        $products = ProductWoo::with('productDetail')
+            ->where('status', 'publish')
+            ->whereHas('productDetail', function($query) {
+                $query->where('status', 'A');
+            })
+            ->get();
         return response()->json([
             'success' => true,
             'data' => $products,
