@@ -16,4 +16,19 @@ class OrderController extends Controller
             'message' => 'Orders retrieved successfully'
         ]);
     }
+
+    public function byUser($userId)
+    {
+        $orders = Order::with(['user', 'productWoo'])
+            ->where('id_user', $userId)
+            ->where('status', 'A')
+            ->orderBy('id_order', 'desc')
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'data' => $orders,
+            'message' => 'User orders retrieved successfully'
+        ]);
+    }
 }

@@ -58,6 +58,7 @@ Route::prefix('products-woo')->group(function () {
 
 Route::prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']);
+    Route::get('/user/{userId}', [OrderController::class, 'byUser']);
 });
 
 Route::prefix('order-participants')->group(function () {
