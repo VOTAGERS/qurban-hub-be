@@ -62,7 +62,7 @@ FRONTEND_URL=http://localhost:5173
 
 Untuk mendukung fleksibilitas status, kolom-kolom berikut telah diubah dari **ENUM** menjadi **STRING**:
 *   Tabel `orders`: `payment_status`, `qurban_status`.
-*   Tabel `payments`: `payment_status`.
+*   Tabel `payments`: `payment_status` dan penambahan kolom `id_stripe` (string) untuk menyimpan ID transaksi Stripe.
 
 ---
 
