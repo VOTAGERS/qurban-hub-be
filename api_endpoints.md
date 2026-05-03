@@ -15,6 +15,16 @@ Endpoint ini digunakan untuk sinkronisasi data dari WooCommerce, baik melalui We
 | `GET` | `/orders-woo` | Mengambil daftar semua order beserta item-nya. |
 | `POST` | `/orders-woo` | Menambah/Update order secara manual (menggunakan `OrderEventHandler`). |
 
+## 💳 Pembayaran & Checkout (Stripe)
+Endpoint untuk memproses pembayaran menggunakan Stripe Checkout.
+
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `POST` | `/checkout` | **Seamless Checkout**: Simpan order + Redirect ke Stripe. |
+| `POST` | `/stripe/webhook` | Menerima notifikasi status pembayaran dari Stripe. |
+| `POST` | `/create-checkout-session` | Membuat sesi Stripe untuk order yang sudah ada. |
+| `GET` | `/order-details/{orderCode}` | Mendapatkan detail lengkap order berdasarkan kode order. |
+
 ---
 
 ## 📦 Internal Resources
@@ -67,3 +77,4 @@ Endpoint standar untuk manajemen data internal aplikasi.
 
 > [!TIP]
 > Semua endpoint yang menggunakan prefix `-woo` sudah terhubung dengan **Services** (`EventHandler`) sehingga logikanya seragam dengan Webhook asli.
+

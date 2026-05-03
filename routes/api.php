@@ -11,7 +11,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QurbanExecutionController;
 use App\Http\Controllers\QurbanMediaController;
 use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ProductWooController;
@@ -21,6 +20,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderDetailsController;
 
 Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
+Route::post('/stripe/webhook', [App\Http\Controllers\Api\StripeWebhookController::class, 'handleWebhook']);
 
 Route::prefix('products-woo')->group(function () {
     Route::get('/', [ProductWooController::class, 'index']);
@@ -81,19 +81,20 @@ Route::prefix('certificates')->group(function () {
     Route::get('/', [CertificateController::class, 'index']);
 });
 
-Route::prefix('deliveries')->group(function () {
-    Route::get('/', [DeliveryController::class, 'index']);
-});
 
 Route::prefix('admins')->group(function () {
     Route::get('/', [AdminController::class, 'index']);
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
 
 Route::post('/checkout', [CheckoutController::class, 'process']);
+
+Route::post('/create-checkout-session', [PaymentController::class, 'checkout']);
 
 // New route for fetching order details
 Route::get('/order-details/{orderCode}', [OrderDetailsController::class, 'show']);

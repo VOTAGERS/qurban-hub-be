@@ -49,10 +49,6 @@ class Order extends Model
         return $this->hasOne(QurbanExecution::class, 'id_order');
     }
 
-    public function deliveries()
-    {
-        return $this->hasMany(Delivery::class, 'id_order');
-    }
 
     public function billing()
     {

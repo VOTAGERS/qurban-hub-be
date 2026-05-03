@@ -208,6 +208,61 @@
                 <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/users-woo</span><span class="desc">Store customer</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
                 <div class="endpoint-body"><pre>{ "id": 202, "email": "user@test.com", "first_name": "Ganes", "last_name": "Yudha" }</pre></div>
             </div>
+        <!-- Payments & Checkout Section -->
+        <section>
+            <h2>💳 Payments & Checkout (Stripe)</h2>
+            
+            <div class="endpoint-card has-body">
+                <div class="endpoint-header" onclick="toggleCard(this)">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/checkout</span>
+                    <span class="desc">Seamless Checkout (Save + Redirect)</span>
+                    <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
+                </div>
+                <div class="endpoint-body">
+                    <span class="label">Request Body</span>
+                    <pre>{
+  "product_id": 888,
+  "quantity": 1,
+  "total_price": 2500000.00,
+  "billing": { "first_name": "Ganes", "email": "user@test.com", "phone": "08123..." },
+  "shipping": { ... },
+  "recipients": [ { "qurban_name": "Fulan", "email": "..." } ]
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card has-body">
+                <div class="endpoint-header" onclick="toggleCard(this)">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/stripe/webhook</span>
+                    <span class="desc">Stripe Webhook Listener</span>
+                    <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
+                </div>
+                <div class="endpoint-body">
+                    <span class="label">Sample Stripe Event (checkout.session.completed)</span>
+                    <pre>{
+  "type": "checkout.session.completed",
+  "data": {
+    "object": {
+      "id": "cs_test_...",
+      "payment_status": "paid",
+      "metadata": {
+        "order_code": "ORD-XXXXX"
+      }
+    }
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/order-details/{orderCode}</span>
+                    <span class="desc">Get full order details by code</span>
+                </div>
+            </div>
         </section>
 
         <!-- Core Resources -->

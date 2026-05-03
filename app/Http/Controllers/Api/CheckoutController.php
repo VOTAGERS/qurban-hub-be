@@ -45,9 +45,45 @@ class CheckoutController extends Controller
 
             $order = $this->checkoutService->processCheckout($request->all());
 
+            // Create Stripe Checkout Session (Redirect Method)
+            if ($request->user()) {
+                // Jika login
+                $session = $request->user()->checkoutCharge(
+                    $order->total_price * 100, 
+                    "Pembayaran Qurban #{$order->order_code}", 
+                    1, 
+                    [
+                        'success_url' => config('app.frontend_url') . '/checkout/success?order_code=' . $order->order_code,
+                        'cancel_url' => config('app.frontend_url') . '/admin/payment?order_code=' . $order->order_code,
+                        'metadata' => ['order_code' => $order->order_code],
+                    ]
+                );
+            } else {
+                // Jika guest
+                \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+                $session = \Stripe\Checkout\Session::create([
+                    'payment_method_types' => ['card'],
+                    'line_items' => [[
+                        'price_data' => [
+                            'currency' => config('cashier.currency') ?? 'sgd',
+                            'product_data' => [
+                                'name' => "Pembayaran Qurban #{$order->order_code}",
+                            ],
+                            'unit_amount' => $order->total_price * 100,
+                        ],
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment',
+                    'success_url' => config('app.frontend_url') . '/checkout/success?order_code=' . $order->order_code,
+                    'cancel_url' => config('app.frontend_url') . '/admin/payment?order_code=' . $order->order_code,
+                    'metadata' => ['order_code' => $order->order_code],
+                ]);
+            }
+
             return response()->json([
-                'message' => 'Checkout processed successfully',
+                'message' => 'Order created successfully. Redirecting to payment...',
                 'order' => $order,
+                'checkout_url' => $session->url,
             ], 201);
 
         } catch (ValidationException $e) {
