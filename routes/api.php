@@ -16,6 +16,15 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ProductWooController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderDetailsController;
+use App\Http\Controllers\Api\RoleAccessController;
+
+Route::prefix('role-access')->group(function () {
+    Route::get('/', [RoleAccessController::class, 'index']);
+    Route::post('/', [RoleAccessController::class, 'store']);
+    Route::get('/{id}', [RoleAccessController::class, 'show']);
+    Route::put('/{id}', [RoleAccessController::class, 'update']);
+    Route::delete('/{id}', [RoleAccessController::class, 'destroy']);
+});
 
 Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
 Route::post('/stripe/webhook', [App\Http\Controllers\Api\StripeWebhookController::class, 'handleWebhook']);

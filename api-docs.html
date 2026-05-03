@@ -267,6 +267,52 @@
             <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/admins</span><span class="desc">Admin accounts</span></div></div>
         </section>
 
+        <!-- Role Management Section -->
+        <section>
+            <h2>🔑 Role Management</h2>
+            
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/role-access</span>
+                    <span class="desc">List all available roles</span>
+                </div>
+            </div>
+
+            <div class="endpoint-card has-body">
+                <div class="endpoint-header" onclick="toggleCard(this)">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/role-access</span>
+                    <span class="desc">Create new role</span>
+                    <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
+                </div>
+                <div class="endpoint-body">
+                    <span class="label">Request Body</span>
+                    <pre>{
+  "role_name": "SuperAdmin",
+  "status": "active",
+  "created_by": "System"
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/api/role-access/{id}</span>
+                    <span class="desc">Update role name/status</span>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/api/role-access/{id}</span>
+                    <span class="desc">Remove role</span>
+                </div>
+            </div>
+        </section>
+
         <!-- System -->
         <section>
             <h2>⚙️ System</h2>
