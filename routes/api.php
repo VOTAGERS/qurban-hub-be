@@ -85,10 +85,17 @@ Route::prefix('deliveries')->group(function () {
     Route::get('/', [DeliveryController::class, 'index']);
 });
 
-Route::prefix('admins')->group(function () {
+Route::post('/admins/login', [AdminController::class, 'login']);
+
+Route::prefix('admins')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [AdminController::class, 'index']);
+    Route::post('/logout', [AdminController::class, 'logout']);
 });
 
+// optional
+Route::middleware('auth:sanctum')->get('/admins/validate-token', function () {
+    return response()->json(['message' => 'Token is valid']);
+});
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
