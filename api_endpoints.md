@@ -2,18 +2,14 @@
 
 Dokumentasi endpoint API untuk Qurban Hub Backend. Semua endpoint menggunakan prefix `/api`.
 
-## 🛒 Integrasi WooCommerce (Woo-Specific)
-Endpoint ini digunakan untuk sinkronisasi data dari WooCommerce, baik melalui Webhook otomatis maupun hit manual.
+## 🛒 Integrasi WooCommerce (Product Sync)
+Endpoint ini digunakan untuk sinkronisasi data produk dari WooCommerce.
 
 | Method | Endpoint | Deskripsi |
 | :--- | :--- | :--- |
-| `POST` | `/webhook/woocommerce` | Endpoint utama untuk menerima Webhook dari WooCommerce. |
+| `POST` | `/webhook/woocommerce` | Endpoint utama untuk menerima Webhook Produk dari WooCommerce. |
 | `GET` | `/products-woo` | Mengambil daftar semua produk WooCommerce yang tersimpan. |
 | `POST` | `/products-woo` | Menambah/Update produk secara manual (menggunakan `ProductEventHandler`). |
-| `GET` | `/users-woo` | Mengambil daftar semua customer WooCommerce. |
-| `POST` | `/users-woo` | Menambah/Update customer secara manual (menggunakan `CustomerEventHandler`). |
-| `GET` | `/orders-woo` | Mengambil daftar semua order beserta item-nya. |
-| `POST` | `/orders-woo` | Menambah/Update order secara manual (menggunakan `OrderEventHandler`). |
 
 ## 💳 Pembayaran & Checkout (Stripe)
 Endpoint untuk memproses pembayaran menggunakan Stripe Checkout.

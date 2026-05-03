@@ -53,7 +53,8 @@ class CheckoutController extends Controller
                     "Pembayaran Qurban #{$order->order_code}", 
                     1, 
                     [
-                        'success_url' => config('app.frontend_url') . '/checkout/success?order_code=' . $order->order_code,
+                        // 'success_url' => config('app.frontend_url') . '/?status=success&order_code=' . $order->order_code, //temporarily commented on
+                        'success_url' => config('app.frontend_url') . '/', 
                         'cancel_url' => config('app.frontend_url') . '/admin/payment?order_code=' . $order->order_code,
                         'metadata' => ['order_code' => $order->order_code],
                     ]
@@ -74,7 +75,7 @@ class CheckoutController extends Controller
                         'quantity' => 1,
                     ]],
                     'mode' => 'payment',
-                    'success_url' => config('app.frontend_url') . '/checkout/success?order_code=' . $order->order_code,
+                    'success_url' => config('app.frontend_url') . '/?status=success&order_code=' . $order->order_code,
                     'cancel_url' => config('app.frontend_url') . '/admin/payment?order_code=' . $order->order_code,
                     'metadata' => ['order_code' => $order->order_code],
                 ]);

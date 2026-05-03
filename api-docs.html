@@ -160,53 +160,11 @@
                 </div>
             </div>
 
-            <div class="category-title">Orders (Woo)</div>
-            <div class="endpoint-card">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="path">/api/orders-woo</span>
-                    <span class="desc">Get all orders with items</span>
-                </div>
-            </div>
-            <div class="endpoint-card has-body">
-                <div class="endpoint-header" onclick="toggleCard(this)">
-                    <span class="method post">POST</span>
-                    <span class="path">/api/orders-woo</span>
-                    <span class="desc">Create manual order</span>
-                    <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
-                </div>
-                <div class="endpoint-body">
-                    <pre>{
-  "id": 6001,
-  "status": "processing",
-  "total": "2500000.00",
-  "billing": { "email": "pembeli@example.com" },
-  "line_items": [
-    { "name": "Kambing Tipe A", "quantity": 1, "price": "2500000.00" }
-  ]
-}</pre>
-                </div>
-            </div>
-            <div class="endpoint-card">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="path">/api/orders-woo/{id}</span>
-                    <span class="desc">Get order details</span>
-                </div>
-            </div>
-
             <div class="category-title">Products (Woo)</div>
-            <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/products-woo</span><span class="desc">List products</span></div></div>
+            <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/products-woo</span><span class="desc">List products from WooCommerce</span></div></div>
             <div class="endpoint-card has-body">
-                <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/products-woo</span><span class="desc">Store product</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
+                <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/products-woo</span><span class="desc">Store/Sync product manually</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
                 <div class="endpoint-body"><pre>{ "id": 888, "name": "Sapi Madura", "price": "18000000.00", "status": "publish" }</pre></div>
-            </div>
-
-            <div class="category-title">Customers (Woo)</div>
-            <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/users-woo</span><span class="desc">List customers</span></div></div>
-            <div class="endpoint-card has-body">
-                <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/users-woo</span><span class="desc">Store customer</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
-                <div class="endpoint-body"><pre>{ "id": 202, "email": "user@test.com", "first_name": "Ganes", "last_name": "Yudha" }</pre></div>
             </div>
         <!-- Payments & Checkout Section -->
         <section>
