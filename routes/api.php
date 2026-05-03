@@ -17,7 +17,38 @@ use App\Http\Controllers\ProductWooController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderDetailsController;
 use App\Http\Controllers\Api\RoleAccessController;
+use App\Http\Controllers\Api\StripeWebhookController;
 
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+// Checkout Flow
+Route::post('/checkout', [CheckoutController::class, 'process']);
+Route::post('/create-checkout-session', [PaymentController::class, 'checkout']);
+Route::get('/order-details/{orderCode}', [OrderDetailsController::class, 'show']);
+
+// Webhooks
+Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
+
+// Health Check
+Route::get('/test', function () {
+    return response()->json([
+        'message' => 'Connection to Backend Successful!',
+        'status' => 'success'
+    ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Resource Routes (Public for now, adjust middleware as needed)
+|--------------------------------------------------------------------------
+*/
+
+// Role Management
 Route::prefix('role-access')->group(function () {
     Route::get('/', [RoleAccessController::class, 'index']);
     Route::post('/', [RoleAccessController::class, 'store']);
@@ -26,17 +57,9 @@ Route::prefix('role-access')->group(function () {
     Route::delete('/{id}', [RoleAccessController::class, 'destroy']);
 });
 
-Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
-Route::post('/stripe/webhook', [App\Http\Controllers\Api\StripeWebhookController::class, 'handleWebhook']);
-
+// WooCommerce Sync Resources
 Route::prefix('products-woo')->group(function () {
     Route::get('/', [ProductWooController::class, 'index']);
-    Route::post('/', [ProductWooController::class, 'store']);
-    Route::get('/{id}', [ProductWooController::class, 'show']);
-});
-
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']);
 });
 
 Route::prefix('products-detail')->group(function () {
@@ -47,8 +70,13 @@ Route::prefix('products-detail')->group(function () {
     Route::delete('/{id}', [ProductDetailWooController::class, 'destroy']);
 });
 
-Route::prefix('products-woo')->group(function () {
-    Route::get('/', [ProductWooController::class, 'index']);
+// Internal Resources
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+});
+
+Route::prefix('admins')->group(function () {
+    Route::get('/', [AdminController::class, 'index']);
 });
 
 Route::prefix('orders')->group(function () {
@@ -76,27 +104,13 @@ Route::prefix('certificates')->group(function () {
     Route::get('/', [CertificateController::class, 'index']);
 });
 
-
-Route::prefix('admins')->group(function () {
-    Route::get('/', [AdminController::class, 'index']);
-});
-
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-});
-
-Route::post('/checkout', [CheckoutController::class, 'process']);
-
-Route::post('/create-checkout-session', [PaymentController::class, 'checkout']);
-
-// New route for fetching order details
-Route::get('/order-details/{orderCode}', [OrderDetailsController::class, 'show']);
-
-Route::get('/test', function () {
-    return response()->json([
-        'message' => 'Connection to Backend Successful!',
-        'status' => 'success'
-    ]);
 });
