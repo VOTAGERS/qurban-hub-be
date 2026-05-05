@@ -78,7 +78,6 @@ class CheckoutController extends Controller
                 'order'        => $order,
                 'checkout_url' => $session->url,
             ], 201);
-
         } catch (ValidationException $e) {
             return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -129,11 +128,48 @@ class CheckoutController extends Controller
                 'order_code'    => $order->order_code,
                 'client_secret' => $paymentIntent->client_secret,
             ], 201);
-
         } catch (ValidationException $e) {
             return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Gagal membuat PaymentIntent', 'error' => $e->getMessage()], 500);
+        }
+    }
+    public function createBankTransferOrder(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_id'                  => 'required|exists:products_woo,id',
+                'quantity'                    => 'required|integer|min:1',
+                'total_price'                 => 'required|numeric|min:0',
+                'bank_id'                     => 'required|string',
+                'billing.first_name'          => 'required|string|max:255',
+                'billing.phone'               => 'required|string|max:50',
+                'billing.email'               => 'nullable|email|max:255',
+                'recipients'                  => 'required|array|min:1',
+                'recipients.*.qurban_name'    => 'required|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+            $data = $request->all();
+            if (!isset($data['shipping'])) {
+                $data['shipping'] = $data['billing'];
+            }
+            $order = $this->checkoutService->processCheckout($data);
+            $order->update([
+                'payment_method' => 'bank_transfer',
+                'payment_status' => 'pending',
+            ]);
+
+            return response()->json([
+                'message'    => 'Order created. Please transfer manually.',
+                'order_code' => $order->order_code,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed', 'error' => $e->getMessage()], 500);
         }
     }
     public function confirmPayment(Request $request)
@@ -187,7 +223,6 @@ class CheckoutController extends Controller
                 'message'    => 'Payment confirmed successfully.',
                 'order_code' => $order->order_code,
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to confirm payment', 'error' => $e->getMessage()], 500);
         }
