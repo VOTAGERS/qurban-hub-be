@@ -30,6 +30,7 @@ class User extends Authenticatable
         'country',
         'email',
         'phone',
+        'password',
         'status',
         'created_by',
         'updated_by',
@@ -49,6 +50,6 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'id_role_access');
+        return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'role_code', 'id_user', 'role_code');
     }
 }

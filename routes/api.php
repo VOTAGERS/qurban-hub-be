@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderDetailsController;
 use App\Http\Controllers\Api\RoleAccessController;
 use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\UserAccessController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,14 @@ Route::prefix('role-access')->group(function () {
     Route::get('/{id}', [RoleAccessController::class, 'show']);
     Route::put('/{id}', [RoleAccessController::class, 'update']);
     Route::delete('/{id}', [RoleAccessController::class, 'destroy']);
+});
+
+// User Access Management
+Route::prefix('user-access')->group(function () {
+    Route::get('/', [UserAccessController::class, 'index']);
+    Route::post('/', [UserAccessController::class, 'store']);
+    Route::get('/user/{userId}', [UserAccessController::class, 'show']);
+    Route::delete('/{id}', [UserAccessController::class, 'destroy']);
 });
 
 // WooCommerce Sync Resources

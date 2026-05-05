@@ -17,7 +17,7 @@ class UserRole extends Model
 
     protected $fillable = [
         'id_user',
-        'id_role_access',
+        'role_code',
         'status',
         'created_by',
         'updated_by',
@@ -25,11 +25,11 @@ class UserRole extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
     public function role()
     {
-        return $this->belongsTo(RoleAccess::class, 'id_role_access');
+        return $this->belongsTo(RoleAccess::class, 'role_code', 'role_code');
     }
 }

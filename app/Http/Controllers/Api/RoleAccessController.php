@@ -11,7 +11,7 @@ class RoleAccessController extends Controller
 {
     public function index()
     {
-        $roles = RoleAccess::all();
+        $roles = RoleAccess::where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $roles
@@ -22,6 +22,7 @@ class RoleAccessController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'role_name' => 'required|string|unique:role_accesses,role_name',
+            'role_code' => 'required|string|unique:role_accesses,role_code',
             'status' => 'nullable|string',
             'created_by' => 'nullable|string',
         ]);
@@ -63,6 +64,7 @@ class RoleAccessController extends Controller
 
         $validator = Validator::make($request->all(), [
             'role_name' => 'string|unique:role_accesses,role_name,' . $id . ',id_role_access',
+            'role_code' => 'string|unique:role_accesses,role_code,' . $id . ',id_role_access',
             'status' => 'string',
             'updated_by' => 'nullable|string',
         ]);

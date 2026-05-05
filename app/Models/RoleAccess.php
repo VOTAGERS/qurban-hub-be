@@ -17,6 +17,7 @@ class RoleAccess extends Model
 
     protected $fillable = [
         'role_name',
+        'role_code',
         'status',
         'created_by',
         'updated_by',
@@ -24,6 +25,6 @@ class RoleAccess extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_roles', 'id_role_access', 'id_user');
+        return $this->belongsToMany(User::class, 'user_roles', 'role_code', 'id_user', 'role_code', 'id_user');
     }
 }
