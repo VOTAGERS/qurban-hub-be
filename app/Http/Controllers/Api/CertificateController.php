@@ -8,7 +8,6 @@ use App\Models\OrderParticipant;
 use App\Models\Certificate;
 use App\Services\CertificateGenerator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class CertificateController extends Controller
@@ -40,7 +39,7 @@ class CertificateController extends Controller
     /**
      * Get participants for a specific order
      */
-    public function getOrderParticipants($orderId)
+    public function getOrderParticipants(Request $request, $orderId)
     {
         $participants = OrderParticipant::with('certificate')
             ->where('id_order', $orderId)
@@ -55,7 +54,7 @@ class CertificateController extends Controller
     /**
      * Bulk generate certificates for an order
      */
-    public function bulkGenerate($orderId)
+    public function bulkGenerate(Request $request, $orderId)
     {
         $participants = OrderParticipant::where('id_order', $orderId)->get();
 
@@ -102,5 +101,23 @@ class CertificateController extends Controller
             'generated_ids' => $results,
             'errors' => $errors
         ]);
+    }
+
+    /**
+     * Download a certificate file
+     */
+    public function download($certificateId)
+    {
+        $certificate = Certificate::findOrFail($certificateId);
+        
+        // Convert URL to absolute path
+        $path = str_replace('/storage/', '', $certificate->file_url);
+        $fullPath = storage_path('app/public/' . $path);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['success' => false, 'message' => 'File not found.'], 404);
+        }
+
+        return response()->download($fullPath);
     }
 }

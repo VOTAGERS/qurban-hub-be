@@ -128,6 +128,7 @@ Route::prefix('certificates')->group(function () {
     Route::get('/orders', [CertificateController::class, 'getOrdersForCertificates']);
     Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
     Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
+    Route::get('/download/{id}', [CertificateController::class, 'download']);
 });
 
 /*
