@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\OrderDetailsController;
 use App\Http\Controllers\Api\RoleAccessController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\UserAccessController;
+use App\Http\Controllers\Api\AuthController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +47,14 @@ Route::get('/test', function () {
 
 Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent']);
 Route::post('/checkout/confirm-payment',[CheckoutController::class, 'confirmPayment']);
+
+// Auth Routes
+Route::prefix('auth')->group(function () {
+    Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+});
+
 
 
 
