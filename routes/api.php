@@ -42,6 +42,11 @@ Route::get('/test', function () {
     ]);
 });
 
+Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent']);
+Route::post('/checkout/confirm-payment',[CheckoutController::class, 'confirmPayment']);
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Resource Routes (Public for now, adjust middleware as needed)
