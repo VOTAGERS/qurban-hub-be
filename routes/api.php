@@ -10,7 +10,7 @@ use App\Http\Controllers\OrderParticipantController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QurbanExecutionController;
 use App\Http\Controllers\QurbanMediaController;
-use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\Api\CertificateController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ProductWooController;
@@ -125,7 +125,9 @@ Route::prefix('qurban-media')->group(function () {
 });
 
 Route::prefix('certificates')->group(function () {
-    Route::get('/', [CertificateController::class, 'index']);
+    Route::get('/orders', [CertificateController::class, 'getOrdersForCertificates']);
+    Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
+    Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
 });
 
 /*
