@@ -20,7 +20,7 @@ class StripeWebhookController extends CashierController
         $orderCode = $intent['metadata']['order_code'] ?? null;
 
         // Log ke apps_log
-        \App\Models\AppLog::create([ 
+        \App\Models\AppLog::create([
             'data_capture' => json_encode($payload),
             'message' => "Stripe Webhook: payment_intent.succeeded for #{$orderCode}",
             'status' => 'success'
