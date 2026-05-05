@@ -160,53 +160,66 @@
                 </div>
             </div>
 
-            <div class="category-title">Orders (Woo)</div>
-            <div class="endpoint-card">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="path">/api/orders-woo</span>
-                    <span class="desc">Get all orders with items</span>
-                </div>
+            <div class="category-title">Products (Woo)</div>
+            <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/products-woo</span><span class="desc">List products from WooCommerce</span></div></div>
+            <div class="endpoint-card has-body">
+                <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/products-woo</span><span class="desc">Store/Sync product manually</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
+                <div class="endpoint-body"><pre>{ "id": 888, "name": "Sapi Madura", "price": "18000000.00", "status": "publish" }</pre></div>
             </div>
+        <!-- Payments & Checkout Section -->
+        <section>
+            <h2>💳 Payments & Checkout (Stripe)</h2>
+            
             <div class="endpoint-card has-body">
                 <div class="endpoint-header" onclick="toggleCard(this)">
                     <span class="method post">POST</span>
-                    <span class="path">/api/orders-woo</span>
-                    <span class="desc">Create manual order</span>
+                    <span class="path">/api/checkout</span>
+                    <span class="desc">Seamless Checkout (Save + Redirect)</span>
                     <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
                 </div>
                 <div class="endpoint-body">
+                    <span class="label">Request Body</span>
                     <pre>{
-  "id": 6001,
-  "status": "processing",
-  "total": "2500000.00",
-  "billing": { "email": "pembeli@example.com" },
-  "line_items": [
-    { "name": "Kambing Tipe A", "quantity": 1, "price": "2500000.00" }
-  ]
+  "product_id": 888,
+  "quantity": 1,
+  "total_price": 2500000.00,
+  "billing": { "first_name": "Ganes", "email": "user@test.com", "phone": "08123..." },
+  "shipping": { ... },
+  "recipients": [ { "qurban_name": "Fulan", "email": "..." } ]
 }</pre>
                 </div>
             </div>
-            <div class="endpoint-card">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="path">/api/orders-woo/{id}</span>
-                    <span class="desc">Get order details</span>
+
+            <div class="endpoint-card has-body">
+                <div class="endpoint-header" onclick="toggleCard(this)">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/stripe/webhook</span>
+                    <span class="desc">Stripe Webhook Listener</span>
+                    <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
+                </div>
+                <div class="endpoint-body">
+                    <span class="label">Sample Stripe Event (checkout.session.completed)</span>
+                    <pre>{
+  "type": "checkout.session.completed",
+  "data": {
+    "object": {
+      "id": "cs_test_...",
+      "payment_status": "paid",
+      "metadata": {
+        "order_code": "ORD-XXXXX"
+      }
+    }
+  }
+}</pre>
                 </div>
             </div>
 
-            <div class="category-title">Products (Woo)</div>
-            <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/products-woo</span><span class="desc">List products</span></div></div>
-            <div class="endpoint-card has-body">
-                <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/products-woo</span><span class="desc">Store product</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
-                <div class="endpoint-body"><pre>{ "id": 888, "name": "Sapi Madura", "price": "18000000.00", "status": "publish" }</pre></div>
-            </div>
-
-            <div class="category-title">Customers (Woo)</div>
-            <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/users-woo</span><span class="desc">List customers</span></div></div>
-            <div class="endpoint-card has-body">
-                <div class="endpoint-header" onclick="toggleCard(this)"><span class="method post">POST</span><span class="path">/api/users-woo</span><span class="desc">Store customer</span><svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
-                <div class="endpoint-body"><pre>{ "id": 202, "email": "user@test.com", "first_name": "Ganes", "last_name": "Yudha" }</pre></div>
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/order-details/{orderCode}</span>
+                    <span class="desc">Get full order details by code</span>
+                </div>
             </div>
         </section>
 
@@ -252,6 +265,52 @@
             <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/certificates</span><span class="desc">Generated certificates</span></div></div>
             <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/deliveries</span><span class="desc">Delivery tracking</span></div></div>
             <div class="endpoint-card"><div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/admins</span><span class="desc">Admin accounts</span></div></div>
+        </section>
+
+        <!-- Role Management Section -->
+        <section>
+            <h2>🔑 Role Management</h2>
+            
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/role-access</span>
+                    <span class="desc">List all available roles</span>
+                </div>
+            </div>
+
+            <div class="endpoint-card has-body">
+                <div class="endpoint-header" onclick="toggleCard(this)">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/role-access</span>
+                    <span class="desc">Create new role</span>
+                    <svg class="caret" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>
+                </div>
+                <div class="endpoint-body">
+                    <span class="label">Request Body</span>
+                    <pre>{
+  "role_name": "SuperAdmin",
+  "status": "active",
+  "created_by": "System"
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/api/role-access/{id}</span>
+                    <span class="desc">Update role name/status</span>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/api/role-access/{id}</span>
+                    <span class="desc">Remove role</span>
+                </div>
+            </div>
         </section>
 
         <!-- System -->

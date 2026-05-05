@@ -128,17 +128,38 @@ class ProductDetailWooController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $detail = ProductDetailWoo::findOrFail($id);
         
-        // Soft delete the master product woo
-        $productWoo = ProductWoo::findOrFail($detail->idproduct_woo);
-        $productWoo->update(['status' => 'deleted']);
+        try {
+            DB::beginTransaction();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Product soft deleted successfully'
-        ]);
+            // Soft delete the master product woo
+            $productWoo = ProductWoo::findOrFail($detail->idproduct_woo);
+            $productWoo->update([
+                'status' => 'deleted',
+                'updated_by' => $request->updated_by ?? 'System'
+            ]);
+
+            // Soft delete the detail record
+            $detail->update([
+                'status' => 'deleted',
+                'updated_by' => $request->updated_by ?? 'System'
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product and detail soft deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete product: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

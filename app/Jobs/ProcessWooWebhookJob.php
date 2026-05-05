@@ -7,8 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Services\Woo\OrderEventHandler;
-use App\Services\Woo\CustomerEventHandler;
 use App\Services\Woo\ProductEventHandler;
 
 class ProcessWooWebhookJob implements ShouldQueue
@@ -32,12 +30,6 @@ class ProcessWooWebhookJob implements ShouldQueue
         $data  = $this->eventPayload['data'] ?? [];
 
         match ($event) {
-            'order.created',
-            'order.updated' => app(OrderEventHandler::class)->handle($data),
-
-            'customer.created',
-            'customer.updated' => app(CustomerEventHandler::class)->handle($data),
-
             'product.created',
             'product.updated' => app(ProductEventHandler::class)->handle($data),
 

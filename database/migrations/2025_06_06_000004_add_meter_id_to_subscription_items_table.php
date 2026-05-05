@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_woo', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('woo_customer_id')->unique();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamps();
+        Schema::table('subscription_items', function (Blueprint $table) {
+            $table->string('meter_id')->nullable()->after('stripe_price');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_woo');
+        Schema::table('subscription_items', function (Blueprint $table) {
+            $table->dropColumn('meter_id');
+        });
     }
 };

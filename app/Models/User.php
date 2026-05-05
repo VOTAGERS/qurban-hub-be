@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Laravel\Cashier\Billable;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Billable;
 
     protected $primaryKey = 'id_user';
 
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'country',
         'email',
         'phone',
+        'password',
         'status',
         'created_by',
         'updated_by',
@@ -44,5 +46,10 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class, 'id_user');
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'role_code', 'id_user', 'role_code');
     }
 }

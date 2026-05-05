@@ -25,28 +25,28 @@ class CheckoutService
 
             // 3. Simpan data order
             $order = Order::create([
-                'order_code' => 'ORD-' . Str::upper(Str::random(10)), // Generate unique order code
+                'order_code' => 'ORD-' . Str::upper(Str::random(10)),
                 'id_user' => $billingUser->id_user,
                 'idproduct_woo' => $data['product_id'],
                 'quantity' => $data['quantity'],
                 'total_price' => $data['total_price'],
-                'payment_status' => 'pending', // Default status
-                'qurban_status' => 'pending', // Default status
-                'created_by' => $billingUser->first_name, // Example, adjust as needed
+                'payment_status' => 'pending',
+                'qurban_status' => 'pending',
+                'created_by' => $billingUser->first_name,
             ]);
 
             // 4. Simpan id_user dan id_order pada table billing
             Billing::create([
                 'id_order' => $order->id_order,
                 'id_user' => $billingUser->id_user,
-                'created_by' => $billingUser->first_name, // Example
+                'created_by' => $billingUser->first_name,
             ]);
 
             // 5. Simpan id_user dan id_order pada table shipping
             Shipping::create([
                 'id_order' => $order->id_order,
                 'id_user' => $shippingUser->id_user,
-                'created_by' => $shippingUser->first_name, // Example
+                'created_by' => $shippingUser->first_name,
             ]);
 
             // 6. Simpan data recipients ke table order_participants
@@ -57,7 +57,7 @@ class CheckoutService
                     'email' => $recipient['email'] ?? null,
                     'phone_number' => $recipient['phone_number'] ?? null,
                     'remarks' => $recipient['remarks'] ?? null,
-                    'created_by' => $billingUser->first_name, // Example
+                    'created_by' => $billingUser->first_name,
                 ]);
             }
 
@@ -65,7 +65,7 @@ class CheckoutService
             AppLog::create([
                 'data_capture' => json_encode($data),
                 'message' => 'Checkout processed for order: ' . $order->order_code,
-                'created_by' => $billingUser->first_name, // Example
+                'created_by' => $billingUser->first_name,
             ]);
 
             DB::commit();
