@@ -47,6 +47,7 @@ Route::get('/test', function () {
 
 Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent']);
 Route::post('/checkout/confirm-payment',[CheckoutController::class, 'confirmPayment']);
+Route::post('/checkout/create-bank-transfer-order', [CheckoutController::class, 'createBankTransferOrder']);
 
 // Auth Routes
 Route::prefix('auth')->group(function () {
@@ -54,9 +55,6 @@ Route::prefix('auth')->group(function () {
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
-
-
-
 
 /*
 |--------------------------------------------------------------------------
