@@ -21,7 +21,7 @@ class CertificateGenerator
      * @param string $filename Target filename in storage
      * @return string Path to the generated file
      */
-    public function generate($participantName, $filename)
+    public function generate($participantName, $filename, $options = [])
     {
         $pdf = new Fpdi();
         
@@ -44,15 +44,25 @@ class CertificateGenerator
         // Use the imported page as a template
         $pdf->useTemplate($tplIdx, 0, 0, null, null, true);
 
+        // Opsi default
+        $defaultOptions = [
+            'x' => 0,
+            'y' => 95,
+            'font' => 'Helvetica',
+            'style' => 'B',
+            'size' => 38,
+            'color' => [26, 77, 46], // Warna Hijau Gelap QurbanHub #1a4d2e
+            'align' => 'C'
+        ];
+        $opts = array_merge($defaultOptions, $options);
+
         // --- STAMP NAME ---
-        // Penyesuaian font: Helvetica Bold, Ukuran 38
-        $pdf->SetFont('Helvetica', 'B', 38);
-        $pdf->SetTextColor(26, 77, 46); // Warna Hijau Gelap QurbanHub #1a4d2e
+        $pdf->SetFont($opts['font'], $opts['style'], $opts['size']);
+        $pdf->SetTextColor($opts['color'][0], $opts['color'][1], $opts['color'][2]);
         
-        // Menggunakan Cell untuk Center Aligment otomatis secara horizontal
-        // Y = 95 adalah perkiraan posisi baris nama pada sertifikat landscape
-        $pdf->SetXY(0, 95);
-        $pdf->Cell($pdf->GetPageWidth(), 20, strtoupper($participantName), 0, 0, 'C');
+        // Mengatur posisi
+        $pdf->SetXY($opts['x'], $opts['y']);
+        $pdf->Cell($pdf->GetPageWidth(), 20, strtoupper($participantName), 0, 0, $opts['align']);
 
         // --- SAVE FILE ---
         $storagePath = 'public/certificates/' . $filename;
