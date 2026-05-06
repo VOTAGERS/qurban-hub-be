@@ -10,7 +10,7 @@ use App\Http\Controllers\OrderParticipantController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QurbanExecutionController;
 use App\Http\Controllers\QurbanMediaController;
-use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\Api\CertificateController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ProductWooController;
@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\OrderDetailsController;
 use App\Http\Controllers\Api\RoleAccessController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\UserAccessController;
+use App\Http\Controllers\Api\AuthController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -45,8 +47,14 @@ Route::get('/test', function () {
 
 Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent']);
 Route::post('/checkout/confirm-payment',[CheckoutController::class, 'confirmPayment']);
+Route::post('/checkout/create-bank-transfer-order', [CheckoutController::class, 'createBankTransferOrder']);
 
-
+// Auth Routes
+Route::prefix('auth')->group(function () {
+    Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -115,7 +123,10 @@ Route::prefix('qurban-media')->group(function () {
 });
 
 Route::prefix('certificates')->group(function () {
-    Route::get('/', [CertificateController::class, 'index']);
+    Route::get('/orders', [CertificateController::class, 'getOrdersForCertificates']);
+    Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
+    Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
+    Route::get('/download/{id}', [CertificateController::class, 'download']);
 });
 
 /*
