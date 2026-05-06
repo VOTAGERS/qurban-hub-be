@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Services\CheckoutService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QurbanThankYouMail;
 
 class CheckoutController extends Controller
 {
@@ -220,6 +222,13 @@ class CheckoutController extends Controller
                     'updated_by'     => 'SYSTEM',
                     'id_stripe'      => $intent->id,
                 ]);
+
+                // Kirim Email Thank You
+                try {
+                    Mail::to($order->user->email)->send(new QurbanThankYouMail($order->load(['user', 'productWoo'])));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Gagal kirim email thank you: " . $e->getMessage());
+                }
             });
 
             return response()->json([

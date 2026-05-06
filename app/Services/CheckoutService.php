@@ -92,26 +92,37 @@ class CheckoutService
         if ($user) {
             // Update user jika ada perubahan data (opsional, tergantung kebutuhan)
             $user->update($userData);
-            return $user;
+        } else {
+            // Buat user baru jika tidak ditemukan
+            $user = User::create([
+                'first_name' => $userData['first_name'],
+                'last_name' => $userData['last_name'] ?? null,
+                'company' => $userData['company'] ?? null,
+                'address_1' => $userData['address_1'] ?? null,
+                'address_2' => $userData['address_2'] ?? null,
+                'city' => $userData['city'] ?? null,
+                'state' => $userData['state'] ?? null,
+                'postcode' => $userData['postcode'] ?? null,
+                'country' => $userData['country'] ?? null,
+                'country_code' => $userData['country_code'] ?? null,
+                'email' => $userData['email'] ?? null,
+                'phone' => $userData['phone'],
+                'status' => 'A',
+                'created_by' => $userData['email'] ?? 'system',
+                'updated_by' => 'SYSTEM',
+            ]);
         }
 
-        // Buat user baru jika tidak ditemukan
-        return User::create([
-            'first_name' => $userData['first_name'],
-            'last_name' => $userData['last_name'] ?? null,
-            'company' => $userData['company'] ?? null,
-            'address_1' => $userData['address_1'] ?? null,
-            'address_2' => $userData['address_2'] ?? null,
-            'city' => $userData['city'] ?? null,
-            'state' => $userData['state'] ?? null,
-            'postcode' => $userData['postcode'] ?? null,
-            'country' => $userData['country'] ?? null,
-            'country_code' => $userData['country_code'] ?? null,
-            'email' => $userData['email'] ?? null,
-            'phone' => $userData['phone'],
-            'status' => 'A',
-            'created_by' => $userData['email'] ?? 'system',
-            'updated_by' => 'SYSTEM',
-        ]);
+        // Otomatis assign role eQurban-Customer
+        \App\Models\UserRole::updateOrCreate(
+            ['id_user' => $user->id_user, 'role_code' => 'eQurban-Customer'],
+            [
+                'status' => 'active',
+                'created_by' => $user->email ?? 'SYSTEM',
+                'updated_by' => 'SYSTEM'
+            ]
+        );
+
+        return $user;
     }
 }
