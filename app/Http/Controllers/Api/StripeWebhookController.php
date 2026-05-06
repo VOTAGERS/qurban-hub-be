@@ -57,7 +57,8 @@ class StripeWebhookController extends CashierController
                     // 1. Update status order
                     $order->update([
                         'payment_status' => 'paid',
-                        'qurban_status' => 'scheduled'
+                        'qurban_status' => 'scheduled',
+                        'updated_by' => 'SYSTEM'
                     ]);
 
                     // 2. Simpan ke tabel payments
@@ -68,7 +69,8 @@ class StripeWebhookController extends CashierController
                         'payment_status' => 'paid',
                         'paid_at' => now(),
                         'status' => 'active',
-                        'created_by' => $order->id_user ?? 1,
+                        'created_by' => $order->user->email ?? 'system',
+                        'updated_by' => 'SYSTEM',
                         'id_stripe' => $stripeId,
                     ]);
                 });

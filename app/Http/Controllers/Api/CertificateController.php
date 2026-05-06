@@ -56,6 +56,7 @@ class CertificateController extends Controller
      */
     public function bulkGenerate(Request $request, $orderId)
     {
+        $order = Order::with('user')->findOrFail($orderId);
         $participants = OrderParticipant::where('id_order', $orderId)->get();
 
         if ($participants->isEmpty()) {
@@ -71,7 +72,10 @@ class CertificateController extends Controller
         foreach ($participants as $participant) {
             try {
                 $filename = 'certificate_' . $participant->id_participant . '_' . time() . '.pdf';
-                $fileUrl = $this->generator->generate($participant->qurban_name, $filename);
+                $fileUrl = $this->generator->generate($participant->qurban_name, $filename, [
+                    'country' => $order->user->country ?? null,
+                    'country_code' => $order->user->country_code ?? null,
+                ]);
 
                 // Update or Create Certificate record
                 Certificate::updateOrCreate(

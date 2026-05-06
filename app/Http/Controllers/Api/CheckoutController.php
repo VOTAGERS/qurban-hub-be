@@ -160,6 +160,7 @@ class CheckoutController extends Controller
             $order->update([
                 'payment_method' => 'bank_transfer',
                 'payment_status' => 'pending',
+                'updated_by'     => 'SYSTEM',
             ]);
 
             return response()->json([
@@ -205,6 +206,7 @@ class CheckoutController extends Controller
                 $order->update([
                     'payment_status' => 'paid',
                     'qurban_status'  => 'scheduled',
+                    'updated_by'     => 'SYSTEM',
                 ]);
 
                 \App\Models\Payment::create([
@@ -214,7 +216,8 @@ class CheckoutController extends Controller
                     'payment_status' => 'paid',
                     'paid_at'        => now(),
                     'status'         => 'active',
-                    'created_by'     => $order->id_user ?? 1,
+                    'created_by'     => $order->user->email ?? 'system',
+                    'updated_by'     => 'SYSTEM',
                     'id_stripe'      => $intent->id,
                 ]);
             });

@@ -64,6 +64,23 @@ class CertificateGenerator
         $pdf->SetXY($opts['x'], $opts['y']);
         $pdf->Cell($pdf->GetPageWidth(), 20, strtoupper($participantName), 0, 0, $opts['align']);
 
+        // --- STAMP FLAG & COUNTRY ---
+        if (!empty($opts['country_code'])) {
+            $flagUrl = "https://flagcdn.com/w160/" . strtolower($opts['country_code']) . ".png";
+            try {
+                // Flag below name
+                $pdf->Image($flagUrl, ($pdf->GetPageWidth() / 2) - 10, 128, 20);
+                
+                // Country name below flag
+                $pdf->SetFont('Helvetica', '', 14);
+                $pdf->SetTextColor(100, 100, 100);
+                $pdf->SetXY(0, 142);
+                $pdf->Cell($pdf->GetPageWidth(), 10, strtoupper($opts['country']), 0, 0, 'C');
+            } catch (\Exception $e) {
+                // Ignore errors
+            }
+        }
+
         // --- SAVE FILE ---
         $storagePath = 'public/certificates/' . $filename;
         $fullPath = storage_path('app/' . $storagePath);

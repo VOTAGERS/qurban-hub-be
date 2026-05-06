@@ -28,6 +28,7 @@ class User extends Authenticatable
         'state',
         'postcode',
         'country',
+        'country_code',
         'email',
         'phone',
         'password',
