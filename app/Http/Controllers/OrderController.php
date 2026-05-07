@@ -9,7 +9,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'productWoo'])->where('status', 'A')->get();
+        $orders = Order::with(['user', 'productWoo'])->where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $orders,
@@ -21,7 +21,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['user', 'productWoo'])
             ->where('id_user', $userId)
-            ->where('status', 'A')
+            ->where('status', 'active')
             ->orderBy('id_order', 'desc')
             ->get();
             

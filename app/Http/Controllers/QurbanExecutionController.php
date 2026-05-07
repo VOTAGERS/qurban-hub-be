@@ -9,7 +9,7 @@ class QurbanExecutionController extends Controller
 {
     public function index()
     {
-        $executions = QurbanExecution::where('status', 'A')->get();
+        $executions = QurbanExecution::where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $executions,

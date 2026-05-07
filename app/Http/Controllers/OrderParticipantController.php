@@ -9,7 +9,7 @@ class OrderParticipantController extends Controller
 {
     public function index()
     {
-        $participants = OrderParticipant::where('status', 'A')->get();
+        $participants = OrderParticipant::where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $participants,

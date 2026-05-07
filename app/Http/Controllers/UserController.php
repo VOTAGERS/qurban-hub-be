@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where('status', 'A')->get();
+        $users = User::where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $users,
