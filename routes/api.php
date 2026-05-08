@@ -53,6 +53,7 @@ Route::post('/checkout/create-bank-transfer-order', [CheckoutController::class, 
 Route::prefix('auth')->group(function () {
     Route::post('/send-otp', [AuthController::class, 'sendOtp']);
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/login-password', [AuthController::class, 'loginWithPassword']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 

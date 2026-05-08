@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -97,11 +99,53 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // 1. Delete Sanctum Token
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        // 2. Clear Session & Cookie (for SPA stateful auth)
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'success' => true,
             'message' => 'Logged out successfully'
+        ])->withCookie(cookie()->forget('laravel_session'))
+          ->withCookie(cookie()->forget('XSRF-TOKEN'));
+    }
+
+    public function loginWithPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid email or password.'
+            ], 401);
+        }
+
+        // Generate Token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Get roles
+        $roles = $user->roles()->get(['role_accesses.role_code', 'role_accesses.role_name']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successful',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                'roles' => $roles
+            ]
         ]);
     }
 }

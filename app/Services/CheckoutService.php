@@ -9,6 +9,7 @@ use App\Models\Shipping;
 use App\Models\OrderParticipant;
 use App\Models\AppLog;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class CheckoutService
@@ -91,6 +92,9 @@ class CheckoutService
 
         if ($user) {
             // Update user jika ada perubahan data (opsional, tergantung kebutuhan)
+            if (empty($user->password)) {
+                $userData['password'] = Hash::make('ILMQurban2026');
+            }
             $user->update($userData);
         } else {
             // Buat user baru jika tidak ditemukan
@@ -107,7 +111,8 @@ class CheckoutService
                 'country_code' => $userData['country_code'] ?? null,
                 'email' => $userData['email'] ?? null,
                 'phone' => $userData['phone'],
-                'status' => 'A',
+                'password' => Hash::make('ILMQurban2026'),
+                'status' => 'active',
                 'created_by' => $userData['email'] ?? 'system',
                 'updated_by' => 'SYSTEM',
             ]);
