@@ -11,7 +11,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QurbanExecutionController;
 use App\Http\Controllers\QurbanMediaController;
 use App\Http\Controllers\Api\CertificateController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ProductWooController;
 use App\Http\Controllers\Api\CheckoutController;
@@ -101,10 +100,6 @@ Route::prefix('users')->group(function () {
     Route::post('/', [UserController::class, 'store']);
     Route::put('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'destroy']);
-});
-
-Route::prefix('admins')->group(function () {
-    Route::get('/', [AdminController::class, 'index']);
 });
 
 Route::prefix('orders')->group(function () {
