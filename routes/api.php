@@ -1,25 +1,24 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProductDetailWooController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderParticipantController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\QurbanExecutionController;
-use App\Http\Controllers\QurbanMediaController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CertificateController;
-use App\Http\Controllers\WebhookController;
-use App\Http\Controllers\ProductWooController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderDetailsController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleAccessController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\UserAccessController;
-use App\Http\Controllers\Api\AuthController;
-
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderParticipantController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductDetailWooController;
+use App\Http\Controllers\ProductWooController;
+use App\Http\Controllers\QurbanExecutionController;
+use App\Http\Controllers\QurbanMediaController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebhookController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,15 +39,14 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
 Route::get('/test', function () {
     return response()->json([
         'message' => 'Connection to Backend Successful!',
-        'status' => 'success'
+        'status' => 'success',
     ]);
 });
 
 Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent']);
-Route::post('/checkout/confirm-payment',[CheckoutController::class, 'confirmPayment']);
+Route::post('/checkout/confirm-payment', [CheckoutController::class, 'confirmPayment']);
 Route::post('/checkout/create-bank-transfer-order', [CheckoutController::class, 'createBankTransferOrder']);
 Route::get('/certificates/public/download/{participantId}', [CertificateController::class, 'publicDownload']);
-
 
 // Auth Routes
 Route::prefix('auth')->middleware('throttle:60,1')->group(function () {
@@ -105,6 +103,7 @@ Route::prefix('users')->group(function () {
 Route::prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']);
     Route::get('/user/{userId}', [OrderController::class, 'byUser']);
+    Route::get('/export-excel', [ReportController::class, 'exportSalesExcel']);
 });
 
 Route::prefix('order-participants')->group(function () {
