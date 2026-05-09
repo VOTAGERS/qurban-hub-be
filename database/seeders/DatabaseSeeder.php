@@ -21,8 +21,13 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        // $this->call([
+        //     QHUB::class,
+        // ]);
+
         $this->call([
-            QHUB::class,
+            RoleAndAdminSeeder::class,
         ]);
+
     }
 }
