@@ -98,6 +98,7 @@ Route::prefix('products-detail')->group(function () {
 // Internal Resources
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
+    Route::post('/', [UserController::class, 'store']);
 });
 
 Route::prefix('admins')->group(function () {
