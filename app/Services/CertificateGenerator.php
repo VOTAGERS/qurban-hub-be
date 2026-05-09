@@ -23,6 +23,11 @@ class CertificateGenerator
      */
     public function generate($participantName, $filename, $options = [])
     {
+        // Define font path for FPDF before instantiation
+        if (!defined('FPDF_FONTPATH')) {
+            define('FPDF_FONTPATH', public_path('fonts/The.Seasons/'));
+        }
+
         $pdf = new Fpdi();
         
         // Path to the template
@@ -44,14 +49,20 @@ class CertificateGenerator
         // Use the imported page as a template
         $pdf->useTemplate($tplIdx, 0, 0, null, null, true);
 
+        // --- REGISTER CUSTOM FONT ---
+        // FPDF expects just the filename here, and searches in FPDF_FONTPATH
+        $pdf->AddFont('TheSeasons', '', 'TheSeasonsRegular.php');
+        $pdf->AddFont('TheSeasons', 'B', 'TheSeasonsBold.php');
+        $pdf->AddFont('TheSeasons', 'I', 'TheSeasonsItalic.php');
+
         // Opsi default
         $defaultOptions = [
             'x' => 0,
-            'y' => 95,
-            'font' => 'Helvetica',
-            'style' => 'B',
-            'size' => 38,
-            'color' => [26, 77, 46], // Warna Hijau Gelap QurbanHub #1a4d2e
+            'y' => 130,
+            'font' => 'TheSeasons', 
+            'style' => '',     // Regular looks very elegant for The Seasons
+            'size' => 45,      // Adjust size for custom font
+            'color' => [122, 27, 46], // Warna Burgundy #7a1b2e
             'align' => 'C'
         ];
         $opts = array_merge($defaultOptions, $options);
@@ -68,13 +79,13 @@ class CertificateGenerator
         if (!empty($opts['country_code'])) {
             $flagUrl = "https://flagcdn.com/w160/" . strtolower($opts['country_code']) . ".png";
             try {
-                // Flag below name
-                $pdf->Image($flagUrl, ($pdf->GetPageWidth() / 2) - 10, 128, 20);
+                // Flag dipindahkan ke bawah (di bawah tulisan Thank You di template)
+                $pdf->Image($flagUrl, ($pdf->GetPageWidth() / 2) - 8, 168, 16);
                 
-                // Country name below flag
-                $pdf->SetFont('Helvetica', '', 14);
-                $pdf->SetTextColor(100, 100, 100);
-                $pdf->SetXY(0, 142);
+                // Nama negara di bawah bendera
+                $pdf->SetFont('TheSeasons', '', 14);
+                $pdf->SetTextColor(122, 27, 46); // Burgundy
+                $pdf->SetXY(0, 180);
                 $pdf->Cell($pdf->GetPageWidth(), 10, strtoupper($opts['country']), 0, 0, 'C');
             } catch (\Exception $e) {
                 // Ignore errors

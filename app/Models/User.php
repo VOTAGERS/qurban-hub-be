@@ -53,4 +53,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'role_code', 'id_user', 'role_code');
     }
+
+    public function isSuperAdmin()
+    {
+        return $this->roles()->whereIn('user_roles.role_code', ['eQurban-SuperAdmin'])->exists();
+    }
+
+    public function isAdmin()
+    {
+        return $this->roles()->whereIn('user_roles.role_code', ['eQurban-Admin'])->exists();
+    }
 }
