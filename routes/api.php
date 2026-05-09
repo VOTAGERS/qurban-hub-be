@@ -51,7 +51,7 @@ Route::get('/certificates/public/download/{participantId}', [CertificateControll
 
 
 // Auth Routes
-Route::prefix('auth')->group(function () {
+Route::prefix('auth')->middleware('throttle:60,1')->group(function () {
     Route::post('/send-otp', [AuthController::class, 'sendOtp']);
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/login-password', [AuthController::class, 'loginWithPassword']);
