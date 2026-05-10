@@ -47,7 +47,7 @@ class CertificateGenerator
         $tplIdx = $pdf->importPage(1);
         
         // Use the imported page as a template
-        $pdf->useTemplate($tplIdx, 0, 0, null, null, true);
+        $pdf->useTemplate($tplIdx, 0, 0, null, null, false);
 
         // --- REGISTER CUSTOM FONT ---
         // FPDF expects just the filename here, and searches in FPDF_FONTPATH
@@ -58,7 +58,7 @@ class CertificateGenerator
         // Opsi default
         $defaultOptions = [
             'x' => 0,
-            'y' => 130,
+            'y' => 110,
             'font' => 'TheSeasons', 
             'style' => '',     // Regular looks very elegant for The Seasons
             'size' => 45,      // Adjust size for custom font
@@ -71,9 +71,12 @@ class CertificateGenerator
         $pdf->SetFont($opts['font'], $opts['style'], $opts['size']);
         $pdf->SetTextColor($opts['color'][0], $opts['color'][1], $opts['color'][2]);
         
-        // Mengatur posisi
-        $pdf->SetXY($opts['x'], $opts['y']);
-        $pdf->Cell($pdf->GetPageWidth(), 20, strtoupper($participantName), 0, 0, $opts['align']);
+        // Hitung posisi X tengah secara manual untuk presisi absolut
+        $textWidth = $pdf->GetStringWidth(mb_strtoupper($participantName, 'UTF-8'));
+        $x = ($pdf->GetPageWidth() - $textWidth) / 2;
+        
+        // Tulis teks langsung di koordinat (Y tetap 110)
+        $pdf->Text($x, $opts['y'], mb_strtoupper($participantName, 'UTF-8'));
 
         // --- STAMP FLAG & COUNTRY ---
         if (!empty($opts['country_code'])) {
