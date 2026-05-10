@@ -28,7 +28,6 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function headings(): array
     {
         return [
-            'ID Order',
             'Order Date',
             'Order Code',
             'Customer Name',
@@ -53,7 +52,6 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
         $location = $order->user ? trim(($order->user->city ?? '') . ', ' . ($order->user->state ?? '')) : '-';
         
         return [
-            $order->id_order,
             $order->created_at->format('Y-m-d H:i'),
             $order->order_code,
             $order->user ? ($order->user->first_name . ' ' . $order->user->last_name) : 'Guest',
@@ -83,9 +81,9 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function columnFormats(): array
     {
         return [
-            'J' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1, // Price per item
-            'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1, // Total Price
-            'B' => 'yyyy-mm-dd hh:mm', // Order Date
+            'I' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1, // Price per item
+            'J' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1, // Total Price
+            'A' => 'yyyy-mm-dd hh:mm', // Order Date
         ];
     }
 }
