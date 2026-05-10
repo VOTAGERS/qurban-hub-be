@@ -16,6 +16,7 @@ class ProductWoo extends Model
         'name',
         'price',
         'status',
+        'id_fileupload',
         'created_by',
         'updated_by'
     ];
@@ -23,5 +24,10 @@ class ProductWoo extends Model
     public function productDetail()
     {
         return $this->hasOne(ProductDetailWoo::class, 'idproduct_woo', 'id');
+    }
+
+    public function fileUpload()
+    {
+        return $this->belongsTo(FileUpload::class, 'id_fileupload', 'id');
     }
 }

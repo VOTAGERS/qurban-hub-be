@@ -8,8 +8,8 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleAccessController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\UserAccessController;
+use App\Http\Controllers\Api\FileUploadController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderParticipantController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductDetailWooController;
 use App\Http\Controllers\ProductWooController;
@@ -79,9 +79,17 @@ Route::prefix('user-access')->group(function () {
     Route::delete('/{id}', [UserAccessController::class, 'destroy']);
 });
 
+// File Upload
+Route::post('/upload', [FileUploadController::class, 'upload']);
+Route::delete('/upload/{id}', [FileUploadController::class, 'destroy']);
+
 // WooCommerce Sync Resources
 Route::prefix('products-woo')->group(function () {
     Route::get('/', [ProductWooController::class, 'index']);
+    Route::post('/', [ProductWooController::class, 'store']);
+    Route::get('/{id}', [ProductWooController::class, 'show']);
+    Route::put('/{id}', [ProductWooController::class, 'update']);
+    Route::delete('/{id}', [ProductWooController::class, 'destroy']);
 });
 
 Route::prefix('products-detail')->group(function () {
@@ -104,14 +112,6 @@ Route::prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']);
     Route::get('/user/{userId}', [OrderController::class, 'byUser']);
     Route::get('/export-excel', [ReportController::class, 'exportSalesExcel']);
-});
-
-Route::prefix('order-participants')->group(function () {
-    Route::get('/', [OrderParticipantController::class, 'index']);
-});
-
-Route::prefix('payments')->group(function () {
-    Route::get('/', [PaymentController::class, 'index']);
 });
 
 Route::prefix('qurban-executions')->group(function () {

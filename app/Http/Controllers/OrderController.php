@@ -9,7 +9,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'productWoo', 'participants.certificate'])
+        $orders = Order::with(['user', 'productWoo.productDetail', 'participants.certificate'])
             ->whereIn('status', ['A', 'active'])
             ->get();
             
@@ -25,7 +25,7 @@ class OrderController extends Controller
         $currentUser = auth('sanctum')->user();
         $isSuperAdmin = $currentUser ? $currentUser->isSuperAdmin() : false;
         
-        $query = Order::with(['user', 'productWoo', 'participants.certificate'])
+        $query = Order::with(['user', 'productWoo.productDetail', 'participants.certificate'])
             ->whereIn('status', ['A', 'active'])
             ->orderBy('id_order', 'desc');
 

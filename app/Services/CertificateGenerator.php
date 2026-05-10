@@ -58,7 +58,7 @@ class CertificateGenerator
         // Opsi default
         $defaultOptions = [
             'x' => 0,
-            'y' => 130,
+            'y' => 120,
             'font' => 'TheSeasons', 
             'style' => '',     // Regular looks very elegant for The Seasons
             'size' => 45,      // Adjust size for custom font
