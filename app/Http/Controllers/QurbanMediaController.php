@@ -9,7 +9,7 @@ class QurbanMediaController extends Controller
 {
     public function index()
     {
-        $media = QurbanMedia::where('status', 'A')->get();
+        $media = QurbanMedia::where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $media,

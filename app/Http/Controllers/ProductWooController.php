@@ -11,7 +11,7 @@ class ProductWooController extends Controller
         $products = ProductWoo::with('productDetail')
             ->where('status', 'publish')
             ->whereHas('productDetail', function($query) {
-                $query->where('status', 'A');
+                $query->where('status', 'active');
             })
             ->get();
         return response()->json([

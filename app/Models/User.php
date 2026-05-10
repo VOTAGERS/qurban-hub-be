@@ -28,6 +28,7 @@ class User extends Authenticatable
         'state',
         'postcode',
         'country',
+        'country_code',
         'email',
         'phone',
         'password',
@@ -51,5 +52,15 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'role_code', 'id_user', 'role_code');
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->roles()->whereIn('user_roles.role_code', ['eQurban-SuperAdmin'])->exists();
+    }
+
+    public function isAdmin()
+    {
+        return $this->roles()->whereIn('user_roles.role_code', ['eQurban-Admin'])->exists();
     }
 }

@@ -9,7 +9,10 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'productWoo'])->where('status', 'A')->get();
+        $orders = Order::with(['user', 'productWoo', 'participants.certificate'])
+            ->whereIn('status', ['A', 'active'])
+            ->get();
+            
         return response()->json([
             'success' => true,
             'data' => $orders,
@@ -19,11 +22,23 @@ class OrderController extends Controller
 
     public function byUser($userId)
     {
-        $orders = Order::with(['user', 'productWoo'])
-            ->where('id_user', $userId)
-            ->where('status', 'A')
-            ->orderBy('id_order', 'desc')
-            ->get();
+        $currentUser = auth('sanctum')->user();
+        $isSuperAdmin = $currentUser ? $currentUser->isSuperAdmin() : false;
+        
+        $query = Order::with(['user', 'productWoo', 'participants.certificate'])
+            ->whereIn('status', ['A', 'active'])
+            ->orderBy('id_order', 'desc');
+
+        // Jika user adalah SuperAdmin/Admin dan sedang mengakses data "My Order" (ID dirinya sendiri), 
+        // berikan akses ke seluruh data (Full Access) sesuai permintaan.
+        if ($currentUser && $isSuperAdmin && $userId == $currentUser->id_user) {
+            // No id_user filter = Full Access
+        } else {
+            // Filter berdasarkan userId (untuk user biasa atau Admin yang melihat user tertentu)
+            $query->where('id_user', $userId);
+        }
+
+        $orders = $query->get();
             
         return response()->json([
             'success' => true,

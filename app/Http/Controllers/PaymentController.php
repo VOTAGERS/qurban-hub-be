@@ -12,7 +12,7 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $payments = Payment::where('status', 'A')->get();
+        $payments = Payment::where('status', 'active')->get();
         return response()->json([
             'success' => true,
             'data' => $payments,

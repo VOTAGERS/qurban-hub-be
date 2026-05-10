@@ -23,6 +23,11 @@ class CertificateGenerator
      */
     public function generate($participantName, $filename, $options = [])
     {
+        // Define font path for FPDF before instantiation
+        if (!defined('FPDF_FONTPATH')) {
+            define('FPDF_FONTPATH', public_path('fonts/The.Seasons/'));
+        }
+
         $pdf = new Fpdi();
         
         // Path to the template
@@ -42,16 +47,22 @@ class CertificateGenerator
         $tplIdx = $pdf->importPage(1);
         
         // Use the imported page as a template
-        $pdf->useTemplate($tplIdx, 0, 0, null, null, true);
+        $pdf->useTemplate($tplIdx, 0, 0, null, null, false);
+
+        // --- REGISTER CUSTOM FONT ---
+        // FPDF expects just the filename here, and searches in FPDF_FONTPATH
+        $pdf->AddFont('TheSeasons', '', 'TheSeasonsRegular.php');
+        $pdf->AddFont('TheSeasons', 'B', 'TheSeasonsBold.php');
+        $pdf->AddFont('TheSeasons', 'I', 'TheSeasonsItalic.php');
 
         // Opsi default
         $defaultOptions = [
             'x' => 0,
-            'y' => 95,
-            'font' => 'Helvetica',
-            'style' => 'B',
-            'size' => 38,
-            'color' => [26, 77, 46], // Warna Hijau Gelap QurbanHub #1a4d2e
+            'y' => 110,
+            'font' => 'TheSeasons', 
+            'style' => '',     // Regular looks very elegant for The Seasons
+            'size' => 45,      // Adjust size for custom font
+            'color' => [122, 27, 46], // Warna Burgundy #7a1b2e
             'align' => 'C'
         ];
         $opts = array_merge($defaultOptions, $options);
@@ -60,9 +71,29 @@ class CertificateGenerator
         $pdf->SetFont($opts['font'], $opts['style'], $opts['size']);
         $pdf->SetTextColor($opts['color'][0], $opts['color'][1], $opts['color'][2]);
         
-        // Mengatur posisi
-        $pdf->SetXY($opts['x'], $opts['y']);
-        $pdf->Cell($pdf->GetPageWidth(), 20, strtoupper($participantName), 0, 0, $opts['align']);
+        // Hitung posisi X tengah secara manual untuk presisi absolut
+        $textWidth = $pdf->GetStringWidth(mb_strtoupper($participantName, 'UTF-8'));
+        $x = ($pdf->GetPageWidth() - $textWidth) / 2;
+        
+        // Tulis teks langsung di koordinat (Y tetap 110)
+        $pdf->Text($x, $opts['y'], mb_strtoupper($participantName, 'UTF-8'));
+
+        // --- STAMP FLAG & COUNTRY ---
+        if (!empty($opts['country_code'])) {
+            $flagUrl = "https://flagcdn.com/w160/" . strtolower($opts['country_code']) . ".png";
+            try {
+                // Flag dipindahkan ke bawah (di bawah tulisan Thank You di template)
+                $pdf->Image($flagUrl, ($pdf->GetPageWidth() / 2) - 8, 168, 16);
+                
+                // Nama negara di bawah bendera
+                $pdf->SetFont('TheSeasons', '', 14);
+                $pdf->SetTextColor(122, 27, 46); // Burgundy
+                $pdf->SetXY(0, 180);
+                $pdf->Cell($pdf->GetPageWidth(), 10, strtoupper($opts['country']), 0, 0, 'C');
+            } catch (\Exception $e) {
+                // Ignore errors
+            }
+        }
 
         // --- SAVE FILE ---
         $storagePath = 'public/certificates/' . $filename;

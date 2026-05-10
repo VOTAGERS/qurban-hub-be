@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Services\CheckoutService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QurbanThankYouMail;
 
 class CheckoutController extends Controller
 {
@@ -160,6 +162,7 @@ class CheckoutController extends Controller
             $order->update([
                 'payment_method' => 'bank_transfer',
                 'payment_status' => 'pending',
+                'updated_by'     => 'SYSTEM',
             ]);
 
             return response()->json([
@@ -205,6 +208,7 @@ class CheckoutController extends Controller
                 $order->update([
                     'payment_status' => 'paid',
                     'qurban_status'  => 'scheduled',
+                    'updated_by'     => 'SYSTEM',
                 ]);
 
                 \App\Models\Payment::create([
@@ -214,9 +218,17 @@ class CheckoutController extends Controller
                     'payment_status' => 'paid',
                     'paid_at'        => now(),
                     'status'         => 'active',
-                    'created_by'     => $order->id_user ?? 1,
+                    'created_by'     => $order->user->email ?? 'system',
+                    'updated_by'     => 'SYSTEM',
                     'id_stripe'      => $intent->id,
                 ]);
+
+                // Kirim Email Thank You
+                try {
+                    Mail::to($order->user->email)->send(new QurbanThankYouMail($order->load(['user', 'productWoo'])));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Gagal kirim email thank you: " . $e->getMessage());
+                }
             });
 
             return response()->json([

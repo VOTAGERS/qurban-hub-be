@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QurbanThankYouMail;
 
 class StripeWebhookController extends CashierController
 {
@@ -57,7 +59,8 @@ class StripeWebhookController extends CashierController
                     // 1. Update status order
                     $order->update([
                         'payment_status' => 'paid',
-                        'qurban_status' => 'scheduled'
+                        'qurban_status' => 'scheduled',
+                        'updated_by' => 'SYSTEM'
                     ]);
 
                     // 2. Simpan ke tabel payments
@@ -68,9 +71,17 @@ class StripeWebhookController extends CashierController
                         'payment_status' => 'paid',
                         'paid_at' => now(),
                         'status' => 'active',
-                        'created_by' => $order->id_user ?? 1,
+                        'created_by' => $order->user->email ?? 'system',
+                        'updated_by' => 'SYSTEM',
                         'id_stripe' => $stripeId,
                     ]);
+
+                    // Kirim Email Thank You
+                    try {
+                        Mail::to($order->user->email)->send(new QurbanThankYouMail($order->load(['user', 'productWoo'])));
+                    } catch (\Exception $e) {
+                        Log::error("Gagal kirim email thank you via Webhook: " . $e->getMessage());
+                    }
                 });
 
                 Log::info("Stripe Webhook: Order #{$orderCode} marked as PAID.");
