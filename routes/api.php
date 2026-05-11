@@ -129,5 +129,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
         Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
         Route::get('/download/{id}', [CertificateController::class, 'download']);
+        Route::post('/upload', [FileUploadController::class, 'upload']);
     });
 });
