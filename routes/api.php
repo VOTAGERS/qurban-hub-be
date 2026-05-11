@@ -13,8 +13,6 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductDetailWooController;
 use App\Http\Controllers\ProductWooController;
-use App\Http\Controllers\QurbanExecutionController;
-use App\Http\Controllers\QurbanMediaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
@@ -30,6 +28,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/checkout', [CheckoutController::class, 'process']);
 Route::post('/create-checkout-session', [PaymentController::class, 'checkout']);
 Route::get('/order-details/{orderCode}', [OrderDetailsController::class, 'show']);
+
+// Public Product Routes for Landing Page
+Route::get('/products-woo', [ProductWooController::class, 'index']);
+Route::get('/products-detail', [ProductDetailWooController::class, 'index']);
 
 // Webhooks
 Route::post('/webhook/woocommerce', [WebhookController::class, 'handle']);
@@ -62,73 +64,6 @@ Route::prefix('auth')->middleware('throttle:60,1')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-// Role Management
-Route::prefix('role-access')->group(function () {
-    Route::get('/', [RoleAccessController::class, 'index']);
-    Route::post('/', [RoleAccessController::class, 'store']);
-    Route::get('/{id}', [RoleAccessController::class, 'show']);
-    Route::put('/{id}', [RoleAccessController::class, 'update']);
-    Route::delete('/{id}', [RoleAccessController::class, 'destroy']);
-});
-
-// User Access Management
-Route::prefix('user-access')->group(function () {
-    Route::get('/', [UserAccessController::class, 'index']);
-    Route::post('/', [UserAccessController::class, 'store']);
-    Route::get('/user/{userId}', [UserAccessController::class, 'show']);
-    Route::delete('/{id}', [UserAccessController::class, 'destroy']);
-});
-
-// File Upload
-Route::post('/upload', [FileUploadController::class, 'upload']);
-Route::delete('/upload/{id}', [FileUploadController::class, 'destroy']);
-
-// WooCommerce Sync Resources
-Route::prefix('products-woo')->group(function () {
-    Route::get('/', [ProductWooController::class, 'index']);
-    Route::post('/', [ProductWooController::class, 'store']);
-    Route::get('/{id}', [ProductWooController::class, 'show']);
-    Route::put('/{id}', [ProductWooController::class, 'update']);
-    Route::delete('/{id}', [ProductWooController::class, 'destroy']);
-});
-
-Route::prefix('products-detail')->group(function () {
-    Route::get('/', [ProductDetailWooController::class, 'index']);
-    Route::post('/', [ProductDetailWooController::class, 'store']);
-    Route::get('/{id}', [ProductDetailWooController::class, 'show']);
-    Route::put('/{id}', [ProductDetailWooController::class, 'update']);
-    Route::delete('/{id}', [ProductDetailWooController::class, 'destroy']);
-});
-
-// Internal Resources
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']);
-    Route::post('/', [UserController::class, 'store']);
-    Route::put('/{id}', [UserController::class, 'update']);
-    Route::delete('/{id}', [UserController::class, 'destroy']);
-});
-
-Route::prefix('orders')->group(function () {
-    Route::get('/', [OrderController::class, 'index']);
-    Route::get('/user/{userId}', [OrderController::class, 'byUser']);
-    Route::get('/export-excel', [ReportController::class, 'exportSalesExcel']);
-});
-
-Route::prefix('qurban-executions')->group(function () {
-    Route::get('/', [QurbanExecutionController::class, 'index']);
-});
-
-Route::prefix('qurban-media')->group(function () {
-    Route::get('/', [QurbanMediaController::class, 'index']);
-});
-
-Route::prefix('certificates')->group(function () {
-    Route::get('/orders', [CertificateController::class, 'getOrdersForCertificates']);
-    Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
-    Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
-    Route::get('/download/{id}', [CertificateController::class, 'download']);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes
@@ -137,5 +72,62 @@ Route::prefix('certificates')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+
+    // Role Management
+    Route::prefix('role-access')->group(function () {
+        Route::get('/', [RoleAccessController::class, 'index']);
+        Route::post('/', [RoleAccessController::class, 'store']);
+        Route::get('/{id}', [RoleAccessController::class, 'show']);
+        Route::put('/{id}', [RoleAccessController::class, 'update']);
+        Route::delete('/{id}', [RoleAccessController::class, 'destroy']);
+    });
+
+    // User Access Management
+    Route::prefix('user-access')->group(function () {
+        Route::get('/', [UserAccessController::class, 'index']);
+        Route::post('/', [UserAccessController::class, 'store']);
+        Route::get('/user/{userId}', [UserAccessController::class, 'show']);
+        Route::delete('/{id}', [UserAccessController::class, 'destroy']);
+    });
+
+    // File Upload
+    Route::post('/upload', [FileUploadController::class, 'upload']);
+    Route::delete('/upload/{id}', [FileUploadController::class, 'destroy']);
+
+    // WooCommerce Sync Resources
+    Route::prefix('products-woo')->group(function () {
+        Route::post('/', [ProductWooController::class, 'store']);
+        Route::get('/{id}', [ProductWooController::class, 'show']);
+        Route::put('/{id}', [ProductWooController::class, 'update']);
+        Route::delete('/{id}', [ProductWooController::class, 'destroy']);
+    });
+
+    Route::prefix('products-detail')->group(function () {
+        Route::post('/', [ProductDetailWooController::class, 'store']);
+        Route::get('/{id}', [ProductDetailWooController::class, 'show']);
+        Route::put('/{id}', [ProductDetailWooController::class, 'update']);
+        Route::delete('/{id}', [ProductDetailWooController::class, 'destroy']);
+    });
+
+    // Internal Resources
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+    });
+
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index']);
+        Route::get('/user/{userId}', [OrderController::class, 'byUser']);
+        Route::get('/export-excel', [ReportController::class, 'exportSalesExcel']);
+    });
+
+    Route::prefix('certificates')->group(function () {
+        Route::get('/orders', [CertificateController::class, 'getOrdersForCertificates']);
+        Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
+        Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
+        Route::get('/download/{id}', [CertificateController::class, 'download']);
     });
 });

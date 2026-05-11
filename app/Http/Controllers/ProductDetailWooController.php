@@ -143,13 +143,13 @@ class ProductDetailWooController extends Controller
             $productWoo = ProductWoo::findOrFail($detail->idproduct_woo);
             $productWoo->update([
                 'status' => 'deleted',
-                'updated_by' => $request->updated_by ?? 'System'
+                'updated_by' => auth('sanctum')->user()->email ?? 'System'
             ]);
 
             // Soft delete the detail record
             $detail->update([
                 'status' => 'deleted',
-                'updated_by' => $request->updated_by ?? 'System'
+                'updated_by' => auth('sanctum')->user()->email ?? 'System'
             ]);
 
             DB::commit();

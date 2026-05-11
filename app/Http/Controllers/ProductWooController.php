@@ -75,7 +75,10 @@ class ProductWooController extends Controller
     public function destroy($id)
     {
         $product = ProductWoo::findOrFail($id);
-        $product->update(['status' => 'deleted']);
+        $product->update([
+            'status' => 'deleted',
+            'updated_by' => auth('sanctum')->user()->email ?? 'System'
+        ]);
         return response()->json(['success' => true, 'message' => 'Product marked as deleted']);
     }
 }

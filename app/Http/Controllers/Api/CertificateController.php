@@ -24,11 +24,20 @@ class CertificateController extends Controller
      */
     public function getOrdersForCertificates()
     {
+        $currentUser = auth('sanctum')->user();
+        $isAdmin = $currentUser ? ($currentUser->isSuperAdmin() || $currentUser->isAdmin()) : false;
+
         // Get paid orders with product and user details
-        $orders = Order::with(['productWoo', 'user', 'participants.certificate'])
+        $query = Order::with(['productWoo', 'user', 'participants.certificate'])
             ->where('payment_status', 'paid')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
+
+        // Jika bukan Admin/SuperAdmin, filter hanya pesanan miliknya sendiri
+        if (!$isAdmin && $currentUser) {
+            $query->where('id_user', $currentUser->id_user);
+        }
+
+        $orders = $query->get();
 
         return response()->json([
             'success' => true,
