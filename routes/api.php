@@ -49,6 +49,7 @@ Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'crea
 Route::post('/checkout/confirm-payment', [CheckoutController::class, 'confirmPayment']);
 Route::post('/checkout/create-bank-transfer-order', [CheckoutController::class, 'createBankTransferOrder']);
 Route::get('/certificates/public/download/{participantId}', [CertificateController::class, 'publicDownload']);
+Route::get('/certificates/download/{id}', [CertificateController::class, 'download']); // Public for direct browser links
 
 // Auth Routes
 Route::prefix('auth')->middleware('throttle:60,1')->group(function () {
@@ -128,7 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders', [CertificateController::class, 'getOrdersForCertificates']);
         Route::get('/order/{id}/participants', [CertificateController::class, 'getOrderParticipants']);
         Route::post('/order/{id}/generate-bulk', [CertificateController::class, 'bulkGenerate']);
-        Route::get('/download/{id}', [CertificateController::class, 'download']);
+        // Route::get('/download/{id}', [CertificateController::class, 'download']); // Moved to public for direct link access
         Route::post('/upload', [FileUploadController::class, 'upload']);
     });
 });
