@@ -14,15 +14,30 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class SalesReportExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithColumnFormatting
 {
+    protected $filters;
+
+    public function __construct(array $filters = [])
+    {
+        $this->filters = $filters;
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return Order::with(['user', 'productWoo', 'participants', 'payments'])
-            ->whereIn('status', ['A', 'active'])
-            ->orderBy('id_order', 'desc')
-            ->get();
+        $query = Order::with(['user', 'productWoo', 'participants', 'payments'])
+            ->whereIn('status', ['A', 'active']);
+
+        if (!empty($this->filters['start_date'])) {
+            $query->whereDate('created_at', '>=', $this->filters['start_date']);
+        }
+
+        if (!empty($this->filters['end_date'])) {
+            $query->whereDate('created_at', '<=', $this->filters['end_date']);
+        }
+
+        return $query->orderBy('id_order', 'desc')->get();
     }
 
     public function headings(): array
