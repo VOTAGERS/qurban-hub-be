@@ -51,7 +51,8 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'role_code', 'id_user', 'role_code');
+        return $this->belongsToMany(RoleAccess::class, 'user_roles', 'id_user', 'role_code', 'id_user', 'role_code')
+                    ->wherePivot('status', 'active');
     }
 
     public function isSuperAdmin()
