@@ -12,7 +12,7 @@ class ProductDetailWooController extends Controller
     public function index()
     {
         // Only return details where the master product is not deleted
-        $details = ProductDetailWoo::with('productWoo')
+        $details = ProductDetailWoo::with(['productWoo.fileUpload'])
             ->whereHas('productWoo', function($q) {
                 $q->where('status', '!=', 'deleted');
             })
@@ -33,6 +33,7 @@ class ProductDetailWooController extends Controller
             'status_woo' => 'required|string|max:50',
             'country' => 'required|string|max:100',
             'max_share' => 'required|integer|min:1',
+            'id_fileupload' => 'nullable|integer|exists:file_uploads,id',
         ]);
 
         try {
@@ -42,6 +43,7 @@ class ProductDetailWooController extends Controller
                 'name' => $request->name,
                 'price' => $request->price,
                 'status' => $request->status_woo,
+                'id_fileupload' => $request->id_fileupload,
             ]);
 
             $detail = ProductDetailWoo::create([
@@ -53,7 +55,7 @@ class ProductDetailWooController extends Controller
 
             DB::commit();
 
-            $detail->load('productWoo');
+            $detail->load(['productWoo.fileUpload']);
 
             return response()->json([
                 'success' => true,
@@ -71,7 +73,7 @@ class ProductDetailWooController extends Controller
 
     public function show($id)
     {
-        $detail = ProductDetailWoo::with('productWoo')->findOrFail($id);
+        $detail = ProductDetailWoo::with(['productWoo.fileUpload'])->findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -90,6 +92,7 @@ class ProductDetailWooController extends Controller
             'status_woo' => 'required|string|max:50',
             'country' => 'required|string|max:100',
             'max_share' => 'required|integer|min:1',
+            'id_fileupload' => 'nullable|integer|exists:file_uploads,id',
         ]);
 
         try {
@@ -102,6 +105,7 @@ class ProductDetailWooController extends Controller
                 'name' => $request->name,
                 'price' => $request->price,
                 'status' => $request->status_woo,
+                'id_fileupload' => $request->id_fileupload,
             ]);
 
             // Update Detail
@@ -112,7 +116,7 @@ class ProductDetailWooController extends Controller
 
             DB::commit();
 
-            $detail->load('productWoo');
+            $detail->load(['productWoo.fileUpload']);
 
             return response()->json([
                 'success' => true,
@@ -139,13 +143,13 @@ class ProductDetailWooController extends Controller
             $productWoo = ProductWoo::findOrFail($detail->idproduct_woo);
             $productWoo->update([
                 'status' => 'deleted',
-                'updated_by' => $request->updated_by ?? 'System'
+                'updated_by' => auth('sanctum')->user()->email ?? 'System'
             ]);
 
             // Soft delete the detail record
             $detail->update([
                 'status' => 'deleted',
-                'updated_by' => $request->updated_by ?? 'System'
+                'updated_by' => auth('sanctum')->user()->email ?? 'System'
             ]);
 
             DB::commit();

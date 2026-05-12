@@ -104,7 +104,7 @@ class UserController extends Controller
         
         $user->update([
             'status' => 'deleted',
-            'updated_by' => 'SYSTEM'
+            'updated_by' => auth('sanctum')->user()->email ?? 'System'
         ]);
 
         return response()->json([
