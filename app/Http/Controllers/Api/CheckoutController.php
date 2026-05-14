@@ -152,7 +152,6 @@ class CheckoutController extends Controller
                 'product_id' => 'required|exists:products_woo,id',
                 'quantity' => 'required|integer|min:1',
                 'total_price' => 'required|numeric|min:0',
-                'bank_id' => 'required|string',
                 'billing.first_name' => 'required|string|max:255',
                 'billing.phone' => 'required|string|max:50',
                 'billing.email' => 'nullable|email|max:255',
