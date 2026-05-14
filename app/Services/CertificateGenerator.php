@@ -7,96 +7,113 @@ use Illuminate\Support\Facades\Storage;
 
 class CertificateGenerator
 {
-    protected $fpdf;
-
-    public function __construct()
+    public function generate(string $participantName, string $filename, array $options = []): string
     {
-        // We'll initialize FPDI inside the generate method to ensure a fresh instance per call
+        $this->defineFontPath();
+
+        $pdf = new Fpdi();
+        $pdf->AddPage('L'); // Landscape
+
+        $this->loadTemplate($pdf);
+        $this->registerFonts($pdf);
+
+        $opts = array_merge($this->defaultOptions(), $options);
+
+        $this->stampName($pdf, $participantName, $opts);
+
+        if (!empty($opts['country_code'])) {
+            $this->stampFlag($pdf, $opts);
+        }
+
+        return $this->saveFile($pdf, $filename);
     }
 
-    /**
-     * Generate a certificate PDF for a participant
-     *
-     * @param string $participantName Name to be printed on the certificate
-     * @param string $filename Target filename in storage
-     * @return string Path to the generated file
-     */
-    public function generate($participantName, $filename, $options = [])
+    private function defineFontPath(): void
     {
-        // Define font path for FPDF before instantiation
         if (!defined('FPDF_FONTPATH')) {
             define('FPDF_FONTPATH', public_path('fonts/The.Seasons/'));
         }
+    }
 
-        $pdf = new Fpdi();
-        
-        // Path to the template
+    private function loadTemplate(Fpdi $pdf): void
+    {
         $templatePath = public_path('certificate-template/qurbanhub-certificate.pdf');
-        
+
         if (!file_exists($templatePath)) {
-            throw new \Exception("Template certificate tidak ditemukan di: " . $templatePath);
+            throw new \Exception("Template tidak ditemukan: {$templatePath}");
         }
 
-        // Add a page
-        $pdf->AddPage('L'); // 'L' for Landscape, adjust if your PDF is Portrait
-
-        // Set the source file
         $pdf->setSourceFile($templatePath);
-        
-        // Import page 1
         $tplIdx = $pdf->importPage(1);
-        
-        // Use the imported page as a template
         $pdf->useTemplate($tplIdx, 0, 0, null, null, true);
+    }
 
-        // --- REGISTER CUSTOM FONT ---
-        // FPDF expects just the filename here, and searches in FPDF_FONTPATH
-        $pdf->AddFont('TheSeasons', '', 'TheSeasonsRegular.php');
+    private function registerFonts(Fpdi $pdf): void
+    {
+        $pdf->AddFont('TheSeasons', '',  'TheSeasonsRegular.php');
         $pdf->AddFont('TheSeasons', 'B', 'TheSeasonsBold.php');
         $pdf->AddFont('TheSeasons', 'I', 'TheSeasonsItalic.php');
+    }
 
-        // Opsi default
-        $defaultOptions = [
-            'x' => 0,
-            'y' => 130,
-            'font' => 'TheSeasons', 
-            'style' => '',     // Regular looks very elegant for The Seasons
-            'size' => 45,      // Adjust size for custom font
-            'color' => [122, 27, 46], // Warna Burgundy #7a1b2e
-            'align' => 'C'
+
+    private function defaultOptions(): array
+    {
+        return [
+            'x'            => 0,
+            'y'            => 95,        
+            'font'         => 'TheSeasons',
+            'style'        => '',
+            'size'         => 45,
+            'color'        => [122, 27, 46], 
+            'align'        => 'C',
+            'country_code' => null,
+            'country'      => '',
         ];
-        $opts = array_merge($defaultOptions, $options);
+    }
 
-        // --- STAMP NAME ---
-        $pdf->SetFont($opts['font'], $opts['style'], $opts['size']);
-        $pdf->SetTextColor($opts['color'][0], $opts['color'][1], $opts['color'][2]);
-        
-        // Mengatur posisi
+    private function stampName(Fpdi $pdf, string $name, array $opts): void
+    {
+        $name= strtoupper($name);
+        $pageWidth = $pdf->GetPageWidth();
+        $maxWidth  = $pageWidth * 0.80;
+        $fontSize  = $opts['size'];   
+        $minSize   = 20;            
+        do {
+            $pdf->SetFont($opts['font'], $opts['style'], $fontSize);
+            $textWidth = $pdf->GetStringWidth($name);
+            if ($textWidth <= $maxWidth || $fontSize <= $minSize) break;
+            $fontSize -= 1;
+        } while (true);
+
+        $pdf->SetTextColor(...$opts['color']);
         $pdf->SetXY($opts['x'], $opts['y']);
-        $pdf->Cell($pdf->GetPageWidth(), 20, strtoupper($participantName), 0, 0, $opts['align']);
+        $pdf->Cell($pageWidth, 20, $name, 0, 0, $opts['align']);
+    }
 
-        // --- STAMP FLAG & COUNTRY ---
-        if (!empty($opts['country_code'])) {
-            $flagUrl = "https://flagcdn.com/w160/" . strtolower($opts['country_code']) . ".png";
-            try {
-                // Flag dipindahkan ke bawah (di bawah tulisan Thank You di template)
-                $pdf->Image($flagUrl, ($pdf->GetPageWidth() / 2) - 8, 168, 16);
-                
-                // Nama negara di bawah bendera
-                $pdf->SetFont('TheSeasons', '', 14);
-                $pdf->SetTextColor(122, 27, 46); // Burgundy
-                $pdf->SetXY(0, 180);
-                $pdf->Cell($pdf->GetPageWidth(), 10, strtoupper($opts['country']), 0, 0, 'C');
-            } catch (\Exception $e) {
-                // Ignore errors
-            }
+    private function stampFlag(Fpdi $pdf, array $opts): void
+    {
+        $flagUrl = 'https://flagcdn.com/w160/' . strtolower($opts['country_code']) . '.png';
+
+        try {
+            $pageCenter = $pdf->GetPageWidth() / 2;
+
+            $pdf->Image($flagUrl, $pageCenter - 8, 120, 16);
+
+            // Nama negara di bawah bendera
+            $pdf->SetFont('TheSeasons', '', 14);
+            $pdf->SetTextColor(122, 27, 46);
+            $pdf->SetXY(0, 138);
+            $pdf->Cell($pdf->GetPageWidth(), 10, strtoupper($opts['country']), 0, 0, 'C');
+        } catch (\Exception $e) {
+            // Ignore errors
         }
+    }
 
-        // --- SAVE FILE ---
+    private function saveFile(Fpdi $pdf, string $filename): string
+    {
         $storagePath = 'public/certificates/' . $filename;
-        $fullPath = storage_path('app/' . $storagePath);
-        
-        // Ensure directory exists
+        $fullPath    = storage_path('app/' . $storagePath);
+
         if (!file_exists(dirname($fullPath))) {
             mkdir(dirname($fullPath), 0755, true);
         }

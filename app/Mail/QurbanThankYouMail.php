@@ -29,7 +29,7 @@ class QurbanThankYouMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Terima Kasih Atas Ibadah Qurban Anda - QurbanHub',
+            subject: 'Thank You for Your Qurban Worship - ILM Qurban',
         );
     }
 

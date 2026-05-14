@@ -3,12 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Mail\QurbanThankYouMail;
+use App\Models\Order;
+use App\Models\Payment;
 use App\Services\CheckoutService;
+use App\Services\WhatsAppService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\QurbanThankYouMail;
+use Stripe\Checkout\Session;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 class CheckoutController extends Controller
 {
@@ -23,20 +31,20 @@ class CheckoutController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'product_id'                  => 'required|exists:products_woo,id',
-                'quantity'                    => 'required|integer|min:1',
-                'total_price'                 => 'required|numeric|min:0',
-                'billing.first_name'          => 'required|string|max:255',
-                'billing.phone'               => 'required|string|max:50',
-                'billing.email'               => 'nullable|email|max:255',
-                'shipping.first_name'         => 'required|string|max:255',
-                'shipping.phone'              => 'required|string|max:50',
-                'shipping.email'              => 'nullable|email|max:255',
-                'recipients'                  => 'required|array|min:1',
-                'recipients.*.qurban_name'    => 'required|string|max:255',
-                'recipients.*.email'          => 'nullable|email|max:255',
-                'recipients.*.phone_number'   => 'nullable|string|max:50',
-                'recipients.*.remarks'        => 'nullable|string',
+                'product_id' => 'required|exists:products_woo,id',
+                'quantity' => 'required|integer|min:1',
+                'total_price' => 'required|numeric|min:0',
+                'billing.first_name' => 'required|string|max:255',
+                'billing.phone' => 'required|string|max:50',
+                'billing.email' => 'nullable|email|max:255',
+                'shipping.first_name' => 'required|string|max:255',
+                'shipping.phone' => 'required|string|max:50',
+                'shipping.email' => 'nullable|email|max:255',
+                'recipients' => 'required|array|min:1',
+                'recipients.*.qurban_name' => 'required|string|max:255',
+                'recipients.*.email' => 'nullable|email|max:255',
+                'recipients.*.phone_number' => 'nullable|string|max:50',
+                'recipients.*.remarks' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -51,33 +59,33 @@ class CheckoutController extends Controller
                     "Pembayaran Qurban #{$order->order_code}",
                     1,
                     [
-                        'success_url' => config('app.frontend_url') . '/',
-                        'cancel_url'  => config('app.frontend_url') . '/admin/payment?order_code=' . $order->order_code,
-                        'metadata'    => ['order_code' => $order->order_code],
+                        'success_url' => config('app.frontend_url').'/',
+                        'cancel_url' => config('app.frontend_url').'/admin/payment?order_code='.$order->order_code,
+                        'metadata' => ['order_code' => $order->order_code],
                     ]
                 );
             } else {
-                \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-                $session = \Stripe\Checkout\Session::create([
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $session = Session::create([
                     'payment_method_types' => ['card'],
                     'line_items' => [[
                         'price_data' => [
-                            'currency'     => config('cashier.currency') ?? 'sgd',
+                            'currency' => config('cashier.currency') ?? 'sgd',
                             'product_data' => ['name' => "Pembayaran Qurban #{$order->order_code}"],
-                            'unit_amount'  => $order->total_price * 100,
+                            'unit_amount' => $order->total_price * 100,
                         ],
                         'quantity' => 1,
                     ]],
-                    'mode'        => 'payment',
-                    'success_url' => config('app.frontend_url') . '/?status=success&order_code=' . $order->order_code,
-                    'cancel_url'  => config('app.frontend_url') . '/admin/payment?order_code=' . $order->order_code,
-                    'metadata'    => ['order_code' => $order->order_code],
+                    'mode' => 'payment',
+                    'success_url' => config('app.frontend_url').'/?status=success&order_code='.$order->order_code,
+                    'cancel_url' => config('app.frontend_url').'/admin/payment?order_code='.$order->order_code,
+                    'metadata' => ['order_code' => $order->order_code],
                 ]);
             }
 
             return response()->json([
-                'message'      => 'Order created successfully. Redirecting to payment...',
-                'order'        => $order,
+                'message' => 'Order created successfully. Redirecting to payment...',
+                'order' => $order,
                 'checkout_url' => $session->url,
             ], 201);
         } catch (ValidationException $e) {
@@ -91,43 +99,43 @@ class CheckoutController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'product_id'                  => 'required|exists:products_woo,id',
-                'quantity'                    => 'required|integer|min:1',
-                'total_price'                 => 'required|numeric|min:0',
-                'billing.first_name'          => 'required|string|max:255',
-                'billing.phone'               => 'required|string|max:50',
-                'billing.email'               => 'nullable|email|max:255',
-                'shipping.first_name'         => 'required|string|max:255',
-                'shipping.phone'              => 'required|string|max:50',
-                'shipping.email'              => 'nullable|email|max:255',
-                'recipients'                  => 'required|array|min:1',
-                'recipients.*.qurban_name'    => 'required|string|max:255',
-                'recipients.*.email'          => 'nullable|email|max:255',
-                'recipients.*.phone_number'   => 'nullable|string|max:50',
-                'recipients.*.remarks'        => 'nullable|string',
+                'product_id' => 'required|exists:products_woo,id',
+                'quantity' => 'required|integer|min:1',
+                'total_price' => 'required|numeric|min:0',
+                'billing.first_name' => 'required|string|max:255',
+                'billing.phone' => 'required|string|max:50',
+                'billing.email' => 'nullable|email|max:255',
+                'shipping.first_name' => 'required|string|max:255',
+                'shipping.phone' => 'required|string|max:50',
+                'shipping.email' => 'nullable|email|max:255',
+                'recipients' => 'required|array|min:1',
+                'recipients.*.qurban_name' => 'required|string|max:255',
+                'recipients.*.email' => 'nullable|email|max:255',
+                'recipients.*.phone_number' => 'nullable|string|max:50',
+                'recipients.*.remarks' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
             $order = $this->checkoutService->processCheckout($request->all());
-            \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+            Stripe::setApiKey(config('services.stripe.secret'));
 
-            $paymentIntent = \Stripe\PaymentIntent::create([
-                'amount'   => $order->total_price * 100,
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $order->total_price * 100,
                 'currency' => config('cashier.currency') ?? 'sgd',
                 'metadata' => [
                     'order_code' => $order->order_code,
                 ],
                 'automatic_payment_methods' => [
-                    'enabled'          => true,
-                    'allow_redirects'  => 'never',
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
                 ],
             ]);
 
             return response()->json([
-                'message'       => 'PaymentIntent created.',
-                'order_code'    => $order->order_code,
+                'message' => 'PaymentIntent created.',
+                'order_code' => $order->order_code,
                 'client_secret' => $paymentIntent->client_secret,
             ], 201);
         } catch (ValidationException $e) {
@@ -136,37 +144,49 @@ class CheckoutController extends Controller
             return response()->json(['message' => 'Gagal membuat PaymentIntent', 'error' => $e->getMessage()], 500);
         }
     }
+
     public function createBankTransferOrder(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'product_id'                  => 'required|exists:products_woo,id',
-                'quantity'                    => 'required|integer|min:1',
-                'total_price'                 => 'required|numeric|min:0',
-                'bank_id'                     => 'required|string',
-                'billing.first_name'          => 'required|string|max:255',
-                'billing.phone'               => 'required|string|max:50',
-                'billing.email'               => 'nullable|email|max:255',
-                'recipients'                  => 'required|array|min:1',
-                'recipients.*.qurban_name'    => 'required|string|max:255',
+                'product_id' => 'required|exists:products_woo,id',
+                'quantity' => 'required|integer|min:1',
+                'total_price' => 'required|numeric|min:0',
+                'billing.first_name' => 'required|string|max:255',
+                'billing.phone' => 'required|string|max:50',
+                'billing.email' => 'nullable|email|max:255',
+                'recipients' => 'required|array|min:1',
+                'recipients.*.qurban_name' => 'required|string|max:255',
             ]);
 
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
             $data = $request->all();
-            if (!isset($data['shipping'])) {
+            if (! isset($data['shipping'])) {
                 $data['shipping'] = $data['billing'];
             }
             $order = $this->checkoutService->processCheckout($data);
             $order->update([
                 'payment_method' => 'bank_transfer',
                 'payment_status' => 'pending',
-                'updated_by'     => 'SYSTEM',
+                'updated_by' => 'SYSTEM',
             ]);
 
+            // Trigger WhatsApp Notification (Pesanan Diproses)
+            try {
+                // We reuse the logic from the webhook controller by making it a service or just calling it here
+                // For now, I'll manually trigger it via a helper or direct service call
+                $controller = new StripeWebhookController;
+                $method = new \ReflectionMethod($controller, 'sendWhatsAppNotifications');
+                $method->setAccessible(true);
+                $method->invoke($controller, $order->load(['user', 'productWoo']));
+            } catch (\Exception $e) {
+                Log::error('Gagal kirim WA diproses: '.$e->getMessage());
+            }
+
             return response()->json([
-                'message'    => 'Order created. Please transfer manually.',
+                'message' => 'Order created. Please transfer manually.',
                 'order_code' => $order->order_code,
             ], 201);
         } catch (ValidationException $e) {
@@ -175,10 +195,11 @@ class CheckoutController extends Controller
             return response()->json(['message' => 'Failed', 'error' => $e->getMessage()], 500);
         }
     }
+
     public function confirmPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'order_code'        => 'required|string',
+            'order_code' => 'required|string',
             'payment_intent_id' => 'required|string',
         ]);
 
@@ -187,52 +208,55 @@ class CheckoutController extends Controller
         }
 
         try {
-            \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-            $intent = \Stripe\PaymentIntent::retrieve($request->payment_intent_id);
+            Stripe::setApiKey(config('services.stripe.secret'));
+            $intent = PaymentIntent::retrieve($request->payment_intent_id);
             if ($intent->status !== 'succeeded') {
                 return response()->json([
                     'message' => 'Pembayaran belum berhasil.',
-                    'status'  => $intent->status,
+                    'status' => $intent->status,
                 ], 422);
             }
             if (($intent->metadata->order_code ?? null) !== $request->order_code) {
                 return response()->json(['message' => 'Order code tidak cocok.'], 403);
             }
 
-            $order = \App\Models\Order::where('order_code', $request->order_code)->firstOrFail();
+            $order = Order::where('order_code', $request->order_code)->firstOrFail();
             if ($order->payment_status === 'paid') {
                 return response()->json(['message' => 'Order sudah dibayar.', 'order_code' => $order->order_code]);
             }
 
-            \Illuminate\Support\Facades\DB::transaction(function () use ($order, $intent) {
+            DB::transaction(function () use ($order, $intent) {
                 $order->update([
                     'payment_status' => 'paid',
-                    'qurban_status'  => 'scheduled',
-                    'updated_by'     => 'SYSTEM',
+                    'qurban_status' => 'scheduled',
+                    'updated_by' => 'SYSTEM',
                 ]);
 
-                \App\Models\Payment::create([
-                    'id_order'       => $order->id_order,
+                Payment::create([
+                    'id_order' => $order->id_order,
                     'payment_method' => 'stripe',
-                    'amount'         => $order->total_price,
+                    'amount' => $order->total_price,
                     'payment_status' => 'paid',
-                    'paid_at'        => now(),
-                    'status'         => 'active',
-                    'created_by'     => $order->user->email ?? 'system',
-                    'updated_by'     => 'SYSTEM',
-                    'id_stripe'      => $intent->id,
+                    'paid_at' => now(),
+                    'status' => 'active',
+                    'created_by' => $order->user->email ?? 'system',
+                    'updated_by' => 'SYSTEM',
+                    'id_stripe' => $intent->id,
                 ]);
 
                 // Kirim Email Thank You
                 try {
                     Mail::to($order->user->email)->send(new QurbanThankYouMail($order->load(['user', 'productWoo'])));
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error("Gagal kirim email thank you: " . $e->getMessage());
+                    Log::error('Gagal kirim email thank you: '.$e->getMessage());
                 }
+
+                // Kirim WhatsApp Notification
+                WhatsAppService::sendOrderNotification($order);
             });
 
             return response()->json([
-                'message'    => 'Payment confirmed successfully.',
+                'message' => 'Payment confirmed successfully.',
                 'order_code' => $order->order_code,
             ]);
         } catch (\Exception $e) {

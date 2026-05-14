@@ -10,16 +10,7 @@ use Stripe\Checkout\Session;
 
 class PaymentController extends Controller
 {
-    public function index()
-    {
-        $payments = Payment::where('status', 'active')->get();
-        return response()->json([
-            'success' => true,
-            'data' => $payments,
-            'message' => 'Payments retrieved successfully'
-        ]);
-    }
-
+    
     public function checkout(Request $request)
     {
         $order = Order::where('order_code', $request->order_code)->first();

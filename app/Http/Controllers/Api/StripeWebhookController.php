@@ -82,6 +82,9 @@ class StripeWebhookController extends CashierController
                     } catch (\Exception $e) {
                         Log::error("Gagal kirim email thank you via Webhook: " . $e->getMessage());
                     }
+
+                    // Kirim WhatsApp Notification
+                    \App\Services\WhatsAppService::sendOrderNotification($order->load(['user', 'productWoo']));
                 });
 
                 Log::info("Stripe Webhook: Order #{$orderCode} marked as PAID.");
