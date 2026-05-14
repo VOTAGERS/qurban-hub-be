@@ -67,43 +67,43 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>QurbanHub</h1>
-            <p>Ibadah Qurban Jadi Lebih Mudah</p>
+            <h1>ILM Qurban</h1>
+            <p>Your Qurban Worship, Made Easier</p>
         </div>
         <div class="content">
             <h2>Jazakumullah Khairan Katsiran, {{ $order->user->first_name }}!</h2>
-            <p>Terima kasih telah mempercayakan ibadah Qurban Anda melalui <strong>QurbanHub (ILM)</strong>. Pembayaran Anda telah kami terima dan pesanan Anda sedang diproses.</p>
+            <p>Thank you for entrusting your Qurban worship through <strong>ILM Qurban</strong>. Your payment has been received and your order is currently being processed.</p>
             
             <div class="order-box">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6df;">Kode Pesanan</td>
+                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6df;">Order Code</td>
                         <td width="20" style="width: 20px; padding: 10px 0; color: #888; border-bottom: 1px solid #e8e6df;">:</td>
                         <td style="padding: 10px 0; font-weight: 600; color: #7A1B2E; font-size: 15px; border-bottom: 1px solid #e8e6df;">#{{ $order->order_code }}</td>
                     </tr>
                     <tr>
-                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6df;">Produk</td>
+                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6df;">Product</td>
                         <td width="20" style="width: 20px; padding: 10px 0; color: #888; border-bottom: 1px solid #e8e6df;">:</td>
-                        <td style="padding: 10px 0; font-weight: 600; color: #7A1B2E; font-size: 15px; border-bottom: 1px solid #e8e6df;">{{ $order->productWoo->name ?? 'Paket Qurban' }}</td>
+                        <td style="padding: 10px 0; font-weight: 600; color: #7A1B2E; font-size: 15px; border-bottom: 1px solid #e8e6df;">{{ $order->productWoo->name ?? 'Qurban Package' }}</td>
                     </tr>
                     <tr>
-                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6df;">Jumlah</td>
+                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8e6df;">Quantity</td>
                         <td width="20" style="width: 20px; padding: 10px 0; color: #888; border-bottom: 1px solid #e8e6df;">:</td>
-                        <td style="padding: 10px 0; font-weight: 600; color: #7A1B2E; font-size: 15px; border-bottom: 1px solid #e8e6df;">{{ $order->quantity }} Ekor/Bagian</td>
+                        <td style="padding: 10px 0; font-weight: 600; color: #7A1B2E; font-size: 15px; border-bottom: 1px solid #e8e6df;">{{ $order->quantity }} Head/Share</td>
                     </tr>
                     <tr>
-                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Total Bayar</td>
+                        <td width="130" style="width: 130px; padding: 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Total Payment</td>
                         <td width="20" style="width: 20px; padding: 10px 0; color: #888;">:</td>
                         <td style="padding: 10px 0; font-weight: 600; color: #7A1B2E; font-size: 15px;">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                     </tr>
                 </table>
             </div>
-            <p style="margin-top: 30px;">Semoga ibadah Qurban ini menjadi berkah dan amal jariyah bagi Anda serta keluarga. Amin.</p>            
-            <p>Salam hangat,<br><strong>Tim QurbanHub</strong></p>
+            <p style="margin-top: 30px;">May this Qurban worship bring blessings and ongoing rewards for you and your family. Ameen.</p>            
+            <p>Warm regards,<br><strong>The QurbanHub Team</strong></p>
         </div>
         <div class="footer">
             <p>&copy; {{ date('Y') }} QurbanHub Indonesia. All rights reserved.</p>
-            <p>Jika ada pertanyaan, silakan hubungi kami melalui WhatsApp atau Email support.</p>
+            <p>If you have any questions, please contact us via WhatsApp or Email support.</p>
         </div>
     </div>
 </body>

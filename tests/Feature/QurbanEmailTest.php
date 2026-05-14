@@ -45,7 +45,7 @@ class QurbanEmailTest extends TestCase
 
         $mailable = new QurbanThankYouMail($order->load(['user', 'productWoo']));
 
-        $mailable->assertHasSubject('Terima Kasih Atas Ibadah Qurban Anda - QurbanHub');
+        $mailable->assertHasSubject('Thank You for Your Qurban Worship - ILM Qurban');
         $mailable->assertSeeInHtml('ORD-MAIL-TEST');
         $mailable->assertSeeInHtml('Sapi Qurban Premium');
         $mailable->assertSeeInHtml('Ganes');
