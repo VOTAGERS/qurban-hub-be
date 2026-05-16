@@ -33,11 +33,15 @@ class CheckoutController extends Controller
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|exists:products_woo,id',
                 'quantity' => 'required|integer|min:1',
+                'purchase_type' => 'required|string|in:full,share',
+                'payment_method' => 'required|string|in:credit_card,bank_transfer',
                 'total_price' => 'required|numeric|min:0',
                 'billing.first_name' => 'required|string|max:255',
+                'billing.last_name' => 'nullable|string|max:255',
                 'billing.phone' => 'required|string|max:50',
                 'billing.email' => 'nullable|email|max:255',
                 'shipping.first_name' => 'required|string|max:255',
+                'shipping.last_name' => 'nullable|string|max:255',
                 'shipping.phone' => 'required|string|max:50',
                 'shipping.email' => 'nullable|email|max:255',
                 'recipients' => 'required|array|min:1',
@@ -72,7 +76,7 @@ class CheckoutController extends Controller
                         'price_data' => [
                             'currency' => config('cashier.currency') ?? 'sgd',
                             'product_data' => ['name' => "Pembayaran Qurban #{$order->order_code}"],
-                            'unit_amount' => $order->total_price * 100,
+                            'unit_amount' => round($order->total_price * 100),
                         ],
                         'quantity' => 1,
                     ]],
@@ -101,11 +105,15 @@ class CheckoutController extends Controller
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|exists:products_woo,id',
                 'quantity' => 'required|integer|min:1',
+                'purchase_type' => 'required|string|in:full,share',
+                'payment_method' => 'required|string|in:credit_card,bank_transfer',
                 'total_price' => 'required|numeric|min:0',
                 'billing.first_name' => 'required|string|max:255',
+                'billing.last_name' => 'nullable|string|max:255',
                 'billing.phone' => 'required|string|max:50',
                 'billing.email' => 'nullable|email|max:255',
                 'shipping.first_name' => 'required|string|max:255',
+                'shipping.last_name' => 'nullable|string|max:255',
                 'shipping.phone' => 'required|string|max:50',
                 'shipping.email' => 'nullable|email|max:255',
                 'recipients' => 'required|array|min:1',
@@ -122,7 +130,7 @@ class CheckoutController extends Controller
             Stripe::setApiKey(config('services.stripe.secret'));
 
             $paymentIntent = PaymentIntent::create([
-                'amount' => $order->total_price * 100,
+                'amount' => round($order->total_price * 100),
                 'currency' => config('cashier.currency') ?? 'sgd',
                 'metadata' => [
                     'order_code' => $order->order_code,
@@ -151,8 +159,11 @@ class CheckoutController extends Controller
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|exists:products_woo,id',
                 'quantity' => 'required|integer|min:1',
+                'purchase_type' => 'required|string|in:full,share',
+                'payment_method' => 'required|string|in:credit_card,bank_transfer',
                 'total_price' => 'required|numeric|min:0',
                 'billing.first_name' => 'required|string|max:255',
+                'billing.last_name' => 'nullable|string|max:255',
                 'billing.phone' => 'required|string|max:50',
                 'billing.email' => 'nullable|email|max:255',
                 'recipients' => 'required|array|min:1',

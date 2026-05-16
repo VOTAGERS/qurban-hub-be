@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Order;
-use App\Models\User;
-use App\Models\Billing;
-use App\Models\Shipping;
-use App\Models\OrderParticipant;
 use App\Models\AppLog;
+use App\Models\Billing;
+use App\Models\Order;
+use App\Models\OrderParticipant;
+use App\Models\Shipping;
+use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -26,9 +27,11 @@ class CheckoutService
 
             // 3. Simpan data order
             $order = Order::create([
-                'order_code' => 'ORD-' . Str::upper(Str::random(10)),
+                'order_code' => 'ORD-'.Str::upper(Str::random(10)),
                 'id_user' => $billingUser->id_user,
                 'idproduct_woo' => $data['product_id'],
+                'purchase_type' => $data['purchase_type'] ?? 'full',
+                'payment_method' => $data['payment_method'] ?? null,
                 'quantity' => $data['quantity'],
                 'total_price' => $data['total_price'],
                 'payment_status' => 'pending',
@@ -69,12 +72,13 @@ class CheckoutService
             // 7. Simpan data order di table app_logs
             AppLog::create([
                 'data_capture' => json_encode($data),
-                'message' => 'Checkout processed for order: ' . $order->order_code,
+                'message' => 'Checkout processed for order: '.$order->order_code,
                 'created_by' => $billingUser->email,
                 'updated_by' => 'SYSTEM',
             ]);
 
             DB::commit();
+
             return $order;
 
         } catch (\Exception $e) {
@@ -87,8 +91,8 @@ class CheckoutService
     {
         // Cari user berdasarkan email atau phone number
         $user = User::where('email', $userData['email'] ?? null)
-                    ->orWhere('phone', $userData['phone'] ?? null)
-                    ->first();
+            ->orWhere('phone', $userData['phone'] ?? null)
+            ->first();
 
         if ($user) {
             // Update user jika ada perubahan data (opsional, tergantung kebutuhan)
@@ -119,12 +123,12 @@ class CheckoutService
         }
 
         // Otomatis assign role eQurban-Customer
-        \App\Models\UserRole::updateOrCreate(
+        UserRole::updateOrCreate(
             ['id_user' => $user->id_user, 'role_code' => 'eQurban-Customer'],
             [
                 'status' => 'active',
                 'created_by' => $user->email ?? 'SYSTEM',
-                'updated_by' => 'SYSTEM'
+                'updated_by' => 'SYSTEM',
             ]
         );
 
