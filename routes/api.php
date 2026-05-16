@@ -17,7 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\PaymentConfigController;
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -73,6 +73,12 @@ Route::prefix('auth')->middleware('throttle:60,1')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+    Route::prefix('payment-config')->group(function () {
+        Route::get('/',[PaymentConfigController::class, 'index']);
+        Route::post('/',[PaymentConfigController::class, 'save']);
+        Route::post('/test-connection',[PaymentConfigController::class, 'testConnection']);
+        Route::delete('/webhook',[PaymentConfigController::class, 'deleteWebhook']);
     });
 
     // Role Management
