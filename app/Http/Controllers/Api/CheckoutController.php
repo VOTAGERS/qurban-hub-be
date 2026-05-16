@@ -153,17 +153,14 @@ class CheckoutController extends Controller
         }
     }
 
-    public function createBankTransferOrder(Request $request)
+     public function createBankTransferOrder(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|exists:products_woo,id',
                 'quantity' => 'required|integer|min:1',
-                'purchase_type' => 'required|string|in:full,share',
-                'payment_method' => 'required|string|in:credit_card,bank_transfer',
                 'total_price' => 'required|numeric|min:0',
                 'billing.first_name' => 'required|string|max:255',
-                'billing.last_name' => 'nullable|string|max:255',
                 'billing.phone' => 'required|string|max:50',
                 'billing.email' => 'nullable|email|max:255',
                 'recipients' => 'required|array|min:1',
@@ -173,31 +170,43 @@ class CheckoutController extends Controller
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
+
             $data = $request->all();
-            if (! isset($data['shipping'])) {
+            if (!isset($data['shipping'])) {
                 $data['shipping'] = $data['billing'];
             }
-            $order = $this->checkoutService->processCheckout($data);
-            $order->update([
-                'payment_method' => 'bank_transfer',
-                'payment_status' => 'pending',
-                'updated_by' => 'SYSTEM',
-            ]);
 
-            // Trigger WhatsApp Notification (Pesanan Diproses)
+            $order = $this->checkoutService->processCheckout($data);
+
+            DB::transaction(function () use ($order) { 
+                $order->update([
+                    'payment_method' => 'bank_transfer',
+                    'payment_status' => 'pending',
+                    'updated_by' => 'SYSTEM',
+                ]);
+                Payment::create([
+                    'id_order'       => $order->id_order,
+                    'payment_method' => 'bank_transfer',
+                    'amount'         => $order->total_price,
+                    'payment_status' => 'pending',      
+                    'paid_at'        => null,            
+                    'status'         => 'active',
+                    'created_by'     => $order->user->email ?? $request->input('billing.email', 'system'),
+                    'updated_by'     => 'SYSTEM',
+                    'id_stripe'      => null,       
+                ]);
+            });
             try {
-                // We reuse the logic from the webhook controller by making it a service or just calling it here
-                // For now, I'll manually trigger it via a helper or direct service call
                 $controller = new StripeWebhookController;
                 $method = new \ReflectionMethod($controller, 'sendWhatsAppNotifications');
                 $method->setAccessible(true);
                 $method->invoke($controller, $order->load(['user', 'productWoo']));
             } catch (\Exception $e) {
-                Log::error('Gagal kirim WA diproses: '.$e->getMessage());
+                Log::error('Gagal kirim WA diproses: ' . $e->getMessage());
             }
 
             return response()->json([
-                'message' => 'Order created. Please transfer manually.',
+                'message'    => 'Order created. Please transfer manually.',
                 'order_code' => $order->order_code,
             ], 201);
         } catch (ValidationException $e) {

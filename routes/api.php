@@ -123,6 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::get('/user/{userId}', [OrderController::class, 'byUser']);
         Route::get('/export-excel', [ReportController::class, 'exportSalesExcel']);
+        Route::patch('/payments/{hash}/status', [OrderController::class, 'updateStatus']);
     });
 
     Route::prefix('certificates')->group(function () {

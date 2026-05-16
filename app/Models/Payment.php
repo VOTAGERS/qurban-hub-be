@@ -1,9 +1,10 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Hashids\Hashids;
 
 class Payment extends Model
 {
@@ -23,9 +24,20 @@ class Payment extends Model
         'updated_by',
     ];
 
+    protected $appends = ['hash_id'];
+
     protected $casts = [
         'paid_at' => 'datetime',
     ];
+    protected function hashId(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => (new Hashids(
+                config('hashids.connections.alternative.salt'),
+                12
+            ))->encode($this->id_payment)
+        );
+    }
 
     public function order()
     {

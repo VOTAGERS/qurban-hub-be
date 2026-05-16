@@ -61,4 +61,8 @@ class Order extends Model
     {
         return $this->hasOne(Shipping::class, 'id_order');
     }
+     public function payment()
+    {
+        return $this->hasOne(Payment::class, 'id_order', 'id_order');
+    }
 }
