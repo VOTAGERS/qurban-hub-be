@@ -82,7 +82,7 @@ class OrderController extends Controller
           $payment->order->payment_status = $request->payment_status;
         if ($request->payment_status === 'paid') {
             $payment->order->qurban_status = 'scheduled';
-        } elseif ($request->payment_status === 'failed') {
+        } elseif ($request->payment_status === 'failed' || $request->payment_status === 'pending') {
             $payment->order->qurban_status = 'pending';
         }
         $payment->order->save();
