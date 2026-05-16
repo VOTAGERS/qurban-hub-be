@@ -15,6 +15,8 @@ class Order extends Model
         'order_code',
         'id_user',
         'idproduct_woo',
+        'purchase_type',
+        'payment_method',
         'quantity',
         'total_price',
         'payment_status',
