@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RoleAccessController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\UserAccessController;
 use App\Http\Controllers\Api\FileUploadController;
+use App\Http\Controllers\Api\QurbanLock as ApiQurbanLock;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductDetailWooController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentConfigController;
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -140,3 +142,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/upload', [FileUploadController::class, 'upload']);
     });
 });
+Route::get('/lock/status/{slug}',  [ApiQurbanLock::class, 'status']);
+Route::post('/lock/unlock/{slug}', [ApiQurbanLock::class, 'unlock']);
