@@ -19,6 +19,8 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
 
+    'admin_unlock_token' => env('ADMIN_UNLOCK_TOKEN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

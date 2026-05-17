@@ -19,13 +19,14 @@ class PaymentConfigController extends Controller
         return response()->json([
             'success' => true,
             'data'    => [
-                'id'          => $config->id,
-                'public_key'  => $config->public_key,
-                'secret_key'  => $this->maskKey($config->secret_key),
-                'mode'        => $config->mode,
-                'is_active'   => $config->is_active,
-                'webhook_url' => $config->webhook_url,
-                'has_webhook' => !empty($config->webhook_secret),
+                'id'             => $config->id,
+                'public_key'     => $config->public_key,
+                'secret_key'     => $this->maskKey($config->secret_key),
+                'webhook_secret' => $config->webhook_secret ? $this->maskKey($config->webhook_secret) : '',
+                'mode'           => $config->mode,
+                'is_active'      => $config->is_active,
+                'webhook_url'    => $config->webhook_url,
+                'has_webhook'    => !empty($config->webhook_secret),
             ]
         ]);
     }
@@ -60,12 +61,28 @@ class PaymentConfigController extends Controller
             ], 422);
         }
 
+        // Handle manual Webhook Secret if provided
+        $webhookSecret = trim($request->webhook_secret ?? '');
+        $isNewWebhookSecret = $webhookSecret && str_starts_with($webhookSecret, 'whsec_') && !str_contains($webhookSecret, '*');
+        if ($isNewWebhookSecret) {
+            $data['webhook_secret'] = $webhookSecret;
+        }
+
         $config = PaymentConfig::updateOrCreate(
             ['provider' => 'stripe'],
             $data
         );
 
-        $webhookResult = $this->registerWebhook($config);
+        // Only auto-register webhook if webhook_secret wasn't manually provided
+        $webhookResult = null;
+        if (!$isNewWebhookSecret && empty($config->webhook_secret)) {
+            $webhookResult = $this->registerWebhook($config);
+        } else {
+            $webhookResult = [
+                'status' => 'already_exists',
+                'reason' => 'Webhook secret provided manually or already exists.'
+            ];
+        }
 
         return response()->json([
             'success' => true,
